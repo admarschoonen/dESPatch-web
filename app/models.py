@@ -10,7 +10,8 @@ class User(UserMixin, db.Model):
   id = db.Column(db.Integer, primary_key=True)
   username = db.Column(db.String(64), index=True, unique=True)
   email = db.Column(db.String(120), index=True, unique=True)
-  #user_url = db.Column(db.String(128), index=True)
+  active = db.Column(db.Boolean)
+  user_url = db.Column(db.String(128), index=True)
   password_hash = db.Column(db.String(128))
   products = db.relationship('Product', backref='user', lazy='dynamic')
 

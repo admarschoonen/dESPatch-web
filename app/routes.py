@@ -6,11 +6,15 @@ from app.models import User
 from werkzeug.urls import url_parse
 from app.forms import ResetPasswordRequestForm
 from app.email import send_password_reset_email
+import random, string
 
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
+  user = User.query.filter_by(username=current_user.username).first()
+  products = user.products
+  '''
   user = {'username': 'Admar'}
   products = [
     {
@@ -22,6 +26,7 @@ def index():
       'version': '0.0.2'
     }
   ]
+  '''
   return render_template('index.html', title='dESPatch-web', products=products)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -33,6 +38,9 @@ def login():
     user = User.query.filter_by(username=form.username.data).first()
     if user is None or not user.check_password(form.password.data):
       flash('Invalid username or password')
+      return redirect(url_for('login'))
+    if user.active == False:
+      flash('Account is inactive')
       return redirect(url_for('login'))
     login_user(user, remember=form.remember_me.data)
     next_page = request.args.get('next')
@@ -46,6 +54,11 @@ def logout():
   logout_user()
   return redirect(url_for('index'))
 
+# from https://stackoverflow.com/questions/2030053/random-strings-in-python
+def randomword(length):
+   letters = string.ascii_lowercase
+   return ''.join(random.choice(letters) for i in range(length))
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
   if current_user.is_authenticated:
@@ -53,12 +66,13 @@ def register():
   form = RegistrationForm()
   if form.validate_on_submit():
     user = User(username=form.username.data, email=form.email.data)
-    user.set_password(form.password.data)
+    user.active = False;
+    # Set password to something random
+    user.set_password(randomword(16))
     db.session.add(user)
     db.session.commit()
-    #flash('Congratulations, you are now a registered user!')
-    #return redirect(url_for('login'))
-    login_user(user, remember=False)
+    send_password_reset_email(user)
+    flash('Check your email for instructions to reset your password')
     return redirect(url_for('index'))
   return render_template('register.html', title='Register', form=form)
 
@@ -158,6 +172,7 @@ def reset_password(token):
   form = ResetPasswordForm()
   if form.validate_on_submit():
     user.set_password(form.password.data)
+    user.active = True;
     db.session.commit()
     flash('Your password has been reset.')
     return redirect(url_for('login'))
