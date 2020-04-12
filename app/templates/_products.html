@@ -1,10 +1,20 @@
-<table style="width:80%">
-  <tr>
-    <th>Product</th>
-    <th>Latest version</th>
-  </tr>
-  {% for product in products %}
-    {% include '_product.html' %}
-  {% endfor %}
-</table>
+{% for product in products %}
+  {% if loop.first %}
+    <table style="width:80%">
+      <tr>
+        <th>Product</th>
+        <th>Latest version</th>
+      </tr>
+  {% endif %}
+
+  {% include '_product.html' %}
+
+  {% if loop.last %}
+    </table>
+  {% endif %}
+{% else %}
+  <p>You don't have any products yet</p>
+{% endfor %}
+
+<a href="{{ url_for('add_product') }}">Add a new product</a>
 

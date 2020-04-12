@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, request
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, EditProductForm, EditReleaseForm, EditInstanceForm, ResetPasswordForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User
+from app.models import User, Product, Release, Instance
 from werkzeug.urls import url_parse
 from app.forms import ResetPasswordRequestForm
 from app.email import send_password_reset_email
@@ -13,7 +13,7 @@ import random, string
 @login_required
 def index():
   user = User.query.filter_by(username=current_user.username).first()
-  products = user.products
+  products = Product.query.filter_by(user_id=current_user.id)
   '''
   user = {'username': 'Admar'}
   products = [
@@ -99,6 +99,20 @@ def edit_profile():
     form.username.data = current_user.username
   return render_template('edit_profile.html', title='Edit profile', form=form)
 
+@app.route('/add_product', methods=['GET', 'POST'])
+@login_required
+def add_product():
+  form = EditProductForm()
+  if form.validate_on_submit():
+    product = Product(name=form.name.data)
+    product.key = randomword(32)
+    product.user_id = current_user.id
+    db.session.add(product)
+    db.session.commit()
+    flash('Your changes have been saved.')
+    return redirect(url_for('index'))
+  return render_template('add_product.html', title='Add product', form=form)
+
 @app.route('/edit_product', methods=['GET', 'POST'])
 @login_required
 def edit_product():
@@ -109,8 +123,6 @@ def edit_product():
     db.session.commit()
     flash('Your changes have been saved.')
     return redirect(url_for('edit_product'))
-  elif request.method == 'GET':
-    form.name.data = current_user.name
   return render_template('edit_product.html', title='Edit product', form=form)
 
 @app.route('/edit_release', methods=['GET', 'POST'])
