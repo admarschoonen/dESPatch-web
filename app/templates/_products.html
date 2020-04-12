@@ -1,0 +1,10 @@
+<table style="width:80%">
+  <tr>
+    <th>Product</th>
+    <th>Latest version</th>
+  </tr>
+  {% for product in products %}
+    {% include '_product.html' %}
+  {% endfor %}
+</table>
+

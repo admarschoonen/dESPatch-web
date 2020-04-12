@@ -1,0 +1,164 @@
+from flask import render_template, flash, redirect, url_for, request
+from app import app, db
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, EditProductForm, EditReleaseForm, EditInstanceForm, ResetPasswordForm
+from flask_login import current_user, login_user, logout_user, login_required
+from app.models import User
+from werkzeug.urls import url_parse
+from app.forms import ResetPasswordRequestForm
+from app.email import send_password_reset_email
+
+@app.route('/')
+@app.route('/index')
+@login_required
+def index():
+  user = {'username': 'Admar'}
+  products = [
+    {
+      'name': 'MyProduct1',
+      'version': '0.0.1'
+    },
+    {
+      'name': 'MyProduct2',
+      'version': '0.0.2'
+    }
+  ]
+  return render_template('index.html', title='dESPatch-web', products=products)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+  if current_user.is_authenticated:
+    return redirect(url_for('index'))
+  form = LoginForm()
+  if form.validate_on_submit():
+    user = User.query.filter_by(username=form.username.data).first()
+    if user is None or not user.check_password(form.password.data):
+      flash('Invalid username or password')
+      return redirect(url_for('login'))
+    login_user(user, remember=form.remember_me.data)
+    next_page = request.args.get('next')
+    if not next_page or url_parse(next_page).netloc != '':
+      next_page = url_for('index')
+    return redirect(next_page)
+  return render_template('login.html', title='Sign in', form=form)
+
+@app.route('/logout')
+def logout():
+  logout_user()
+  return redirect(url_for('index'))
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+  if current_user.is_authenticated:
+    return redirect(url_for('index'))
+  form = RegistrationForm()
+  if form.validate_on_submit():
+    user = User(username=form.username.data, email=form.email.data)
+    user.set_password(form.password.data)
+    db.session.add(user)
+    db.session.commit()
+    #flash('Congratulations, you are now a registered user!')
+    #return redirect(url_for('login'))
+    login_user(user, remember=False)
+    return redirect(url_for('index'))
+  return render_template('register.html', title='Register', form=form)
+
+@app.route('/user/<username>')
+@login_required
+def user(username):
+  user = User.query.filter_by(username=username).first_or_404()
+  products = [
+    {'user': user, 'name': 'MyProduct1', 'key': 'key1'},
+    {'user': user, 'name': 'MyProduct2', 'key': 'key2'}
+  ]
+  return render_template('user.html', user=user, products=products)
+
+@app.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+  form = EditProfileForm(current_user.username)
+  if form.validate_on_submit():
+    current_user.username = form.username.data
+    db.session.commit()
+    flash('Your changes have been saved.')
+    return redirect(url_for('edit_profile'))
+  elif request.method == 'GET':
+    form.username.data = current_user.username
+  return render_template('edit_profile.html', title='Edit profile', form=form)
+
+@app.route('/edit_product', methods=['GET', 'POST'])
+@login_required
+def edit_product():
+  form = EditProductForm()
+  if form.validate_on_submit():
+    current_user.name = form.name.data
+    current_user.key = form.key.data
+    db.session.commit()
+    flash('Your changes have been saved.')
+    return redirect(url_for('edit_product'))
+  elif request.method == 'GET':
+    form.name.data = current_user.name
+  return render_template('edit_product.html', title='Edit product', form=form)
+
+@app.route('/edit_release', methods=['GET', 'POST'])
+@login_required
+def edit_release():
+  form = EditReleaseForm()
+  if form.validate_on_submit():
+    current_user.version = form.version.data
+    current_user.filename = form.filename.data
+    current_user.release_notes = form.release_notes.data
+    db.session.commit()
+    flash('Your changes have been saved.')
+    return redirect(url_for('edit_release'))
+  elif request.method == 'GET':
+    form.version.data = current_user.version
+    form.filename.data = current_user.filename
+    form.release_notes.data = current_user.release_notes
+  return render_template('edit_release.html', title='Edit release', form=form)
+
+@app.route('/edit_instance', methods=['GET', 'POST'])
+@login_required
+def edit_instance():
+  form = EditInstanceForm()
+  if form.validate_on_submit():
+    current_user.mac = form.mac.data
+    current_user.custom_version = form.custom_version.data
+    db.session.commit()
+    flash('Your changes have been saved.')
+    return redirect(url_for('edit_instance'))
+  elif request.method == 'GET':
+    form.mac.data = current_user.mac
+    form.custom_version.data = current_user.custom_version
+  return render_template('edit_instance.html', title='Edit instance', form=form)
+
+@app.route('/reset_password_request', methods=['GET', 'POST'])
+def reset_password_request():
+  if current_user.is_authenticated:
+    return redirect(url_for('index'))
+  form = ResetPasswordRequestForm()
+  if form.validate_on_submit():
+    user = User.query.filter_by(email=form.email.data).first()
+    if user:
+      send_password_reset_email(user)
+      flash('Check your email for instructions to reset your password')
+      return redirect(url_for('login'))
+    else:
+      flash('E-mail address not found')
+      return redirect(url_for('reset_password_request'))
+  return render_template('reset_password_request.html',
+      title='Reset Password', form=form)
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+  if current_user.is_authenticated:
+    return redirect(url_for('index'))
+  user = User.verify_reset_password_token(token)
+  if not user:
+    return redirect(url_for('index'))
+  form = ResetPasswordForm()
+  if form.validate_on_submit():
+    user.set_password(form.password.data)
+    db.session.commit()
+    flash('Your password has been reset.')
+    return redirect(url_for('login'))
+  return render_template('reset_password.html', form=form)

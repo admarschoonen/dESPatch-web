@@ -1,0 +1,10 @@
+<table style="width: 80%">
+  <tr>
+    <th>Version</th>
+    <th>Date</th>
+    <th>Filename</th>
+  </tr>
+  {% for release in releases %}
+    {% include '_release.html' %}
+  {% endfor %}
+</table>
