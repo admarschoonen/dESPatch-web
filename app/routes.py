@@ -113,17 +113,23 @@ def add_product():
     return redirect(url_for('index'))
   return render_template('add_product.html', title='Add product', form=form)
 
-@app.route('/edit_product', methods=['GET', 'POST'])
+@app.route('/edit_product/<product_id>', methods=['GET', 'POST'])
 @login_required
-def edit_product():
+def edit_product(product_id):
   form = EditProductForm()
+  product = Product.query.filter_by(id=product_id).first()
+
   if form.validate_on_submit():
-    current_user.name = form.name.data
-    current_user.key = form.key.data
+    product.name = form.name.data
+    product.key = form.key.data
     db.session.commit()
     flash('Your changes have been saved.')
-    return redirect(url_for('edit_product'))
-  return render_template('edit_product.html', title='Edit product', form=form)
+    return redirect(url_for('index'))
+  elif request.method == 'GET':
+    form.name.data = product.name
+    form.key.data = product.key
+  return render_template('edit_product.html', title='Edit product', 
+    product_id=product_id, form=form)
 
 @app.route('/edit_release', methods=['GET', 'POST'])
 @login_required

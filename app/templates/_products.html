@@ -3,6 +3,7 @@
     <table style="width:80%">
       <tr>
         <th>Product</th>
+        <th>PSK</th>
         <th>Latest version</th>
       </tr>
   {% endif %}
@@ -15,6 +16,6 @@
 {% else %}
   <p>You don't have any products yet</p>
 {% endfor %}
-
-<a href="{{ url_for('add_product') }}">Add a new product</a>
+<br>
+<p><a href="{{ url_for('add_product') }}">Add a new product</a></p>
 
