@@ -14,20 +14,7 @@ import random, string
 def index():
   user = User.query.filter_by(username=current_user.username).first()
   products = Product.query.filter_by(user_id=current_user.id)
-  '''
-  user = {'username': 'Admar'}
-  products = [
-    {
-      'name': 'MyProduct1',
-      'version': '0.0.1'
-    },
-    {
-      'name': 'MyProduct2',
-      'version': '0.0.2'
-    }
-  ]
-  '''
-  return render_template('index.html', title='dESPatch-web', products=products)
+  return render_template('index.html', title='dESPatch-web', products=products, add_product_link=True)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -79,12 +66,11 @@ def register():
 @app.route('/user/<username>')
 @login_required
 def user(username):
+  if current_user.is_authenticated == False:
+    return redirect(url_for('index'))
   user = User.query.filter_by(username=username).first_or_404()
-  products = [
-    {'user': user, 'name': 'MyProduct1', 'key': 'key1'},
-    {'user': user, 'name': 'MyProduct2', 'key': 'key2'}
-  ]
-  return render_template('user.html', user=user, products=products)
+  products = Product.query.filter_by(user_id=current_user.id)
+  return render_template('user.html', user=user, products=products, add_product_link=True)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -112,6 +98,12 @@ def add_product():
     flash('Your changes have been saved.')
     return redirect(url_for('index'))
   return render_template('add_product.html', title='Add product', form=form)
+
+@app.route('/product/<product_id>')
+@login_required
+def product(product_id):
+  product = Product.query.filter_by(id=product_id).first()
+  return render_template('product.html', user=user, product=product, add_product_link=False)
 
 @app.route('/edit_product/<product_id>', methods=['GET', 'POST'])
 @login_required

@@ -1,5 +1,10 @@
 <tr>
-  <td><a href="{{ url_for('edit_product', product_id=product.id) }}">{{ product.name }}</a></td>
+  {% if add_product_link %}
+  <td><a href="{{ url_for('product', product_id=product.id) }}">{{ product.name }}</a></td>
+  {% else %}
+  <td>{{ product.name }}</td>
+  {% endif %}
   <td>{{ product.key }}</td>
   <td>{{ product.version }}</td>
+  <td><a href="{{ url_for('edit_product', product_id=product.id) }}">(edit product)</a></td>
 </tr>

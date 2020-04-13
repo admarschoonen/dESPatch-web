@@ -1,17 +1,12 @@
 {% for product in products %}
   {% if loop.first %}
-    <table style="width:80%">
-      <tr>
-        <th>Product</th>
-        <th>PSK</th>
-        <th>Latest version</th>
-      </tr>
+    {% include '_products_table_head.html' %}
   {% endif %}
 
   {% include '_product.html' %}
 
   {% if loop.last %}
-    </table>
+    {% include '_products_table_tail.html' %}
   {% endif %}
 {% else %}
   <p>You don't have any products yet</p>
