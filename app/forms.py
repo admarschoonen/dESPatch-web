@@ -40,7 +40,6 @@ class EditProfileForm(FlaskForm):
 
 class EditProductForm(FlaskForm):
   name = StringField('Name', validators=[InputRequired(), Length(min=1, max=64)])
-  key = StringField('PSK', validators=[InputRequired(), Length(min=1, max=32)])
   submit = SubmitField('OK')
 
 class EditReleaseForm(FlaskForm):

@@ -121,13 +121,11 @@ def edit_product(product_id):
 
   if form.validate_on_submit():
     product.name = form.name.data
-    product.key = form.key.data
     db.session.commit()
     flash('Your changes have been saved.')
     return redirect(url_for('index'))
   elif request.method == 'GET':
     form.name.data = product.name
-    form.key.data = product.key
   return render_template('edit_product.html', title='Edit product', 
     product_id=product_id, form=form)
 
