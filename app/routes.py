@@ -103,13 +103,19 @@ def add_product():
 @login_required
 def product(product_id):
   product = Product.query.filter_by(id=product_id).first()
-  return render_template('product.html', user=user, product=product, add_product_link=False)
+  if product.user_id == current_user.id:
+    return render_template('product.html', user=user, product=product, add_product_link=False)
+  else:
+    return render_template('403.html', user=user), 403
 
 @app.route('/edit_product/<product_id>', methods=['GET', 'POST'])
 @login_required
 def edit_product(product_id):
   form = EditProductForm()
   product = Product.query.filter_by(id=product_id).first()
+
+  if product.user_id != current_user.id:
+    return render_template('403.html', user=user), 403
 
   if form.validate_on_submit():
     product.name = form.name.data
