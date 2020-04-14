@@ -6,6 +6,7 @@ from app.models import User, Product, Release, Instance
 from werkzeug.urls import url_parse
 from app.forms import ResetPasswordRequestForm
 from app.email import send_password_reset_email
+from datetime import datetime
 import random, string
 
 @app.route('/')
@@ -104,7 +105,8 @@ def add_product():
 def product(product_id):
   product = Product.query.filter_by(id=product_id).first()
   if product.user_id == current_user.id:
-    return render_template('product.html', user=user, product=product, add_product_link=False)
+    releases = Release.query.filter_by(product_id=product.id)
+    return render_template('product.html', user=user, product=product, releases=releases, add_product_link=False)
   else:
     return render_template('403.html', user=user), 403
 
@@ -126,6 +128,29 @@ def edit_product(product_id):
     form.name.data = product.name
   return render_template('edit_product.html', title='Edit product', 
     product_id=product_id, form=form)
+
+@app.route('/add_release', methods=['GET', 'POST'])
+@login_required
+def add_release():
+  form = EditReleaseForm()
+  product_id = request.args.get('product_id')
+  product = Product.query.filter_by(id=product_id).first()
+
+  if product.user_id != current_user.id:
+    return render_template('403.html', user=user), 403
+
+  if form.validate_on_submit():
+    release = Release(version=form.version.data)
+    release.filename = randomword(32)
+    release.release_notes = form.release_notes.data
+    release.timestamp = datetime.utcnow()
+    release.product_id = product.id
+    print("release: " + str(release))
+    db.session.add(release)
+    db.session.commit()
+    flash('Your changes have been saved.')
+    return redirect(url_for('product', product_id=product.id))
+  return render_template('add_release.html', title='Add release', product_id=product_id, form=form)
 
 @app.route('/edit_release', methods=['GET', 'POST'])
 @login_required

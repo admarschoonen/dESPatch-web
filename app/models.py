@@ -48,7 +48,7 @@ class Product(db.Model):
   instances = db.relationship('Instance', backref='product', lazy='dynamic')
 
   def __repr__(self):
-    return '<Product {}>'.format(self.name)
+    return '<Product {}, user_id: {}>'.format(self.name, self.user_id)
 
 class Release(db.Model):
   id = db.Column(db.Integer, primary_key=True)
@@ -59,7 +59,7 @@ class Release(db.Model):
   product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
 
   def __repr__(self):
-    return '<Release {}>'.format(self.version)
+    return '<Release {}, product_id: {}>'.format(self.version, self.product_id)
 
 class Instance(db.Model):
   id = db.Column(db.Integer, primary_key=True)

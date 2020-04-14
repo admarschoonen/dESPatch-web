@@ -1,10 +1,15 @@
-<table style="width: 80%">
-  <tr>
-    <th>Version</th>
-    <th>Date</th>
-    <th>Filename</th>
-  </tr>
-  {% for release in releases %}
-    {% include '_release.html' %}
-  {% endfor %}
-</table>
+{% for release in releases %}
+  {% if loop.first %}
+    {% include '_releases_table_head.html' %}
+  {% endif %}
+
+  {% include '_release.html' %}
+
+  {% if loop.last %}
+    {% include '_releases_table_tail.html' %}
+  {% endif %}
+{% else %}
+  <p>You don't have any releases for this product yet</p>
+{% endfor %}
+<br>
+<p><a href="{{ url_for('add_release', product_id=product.id) }}">Add a new release</a></p>

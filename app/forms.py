@@ -44,7 +44,7 @@ class EditProductForm(FlaskForm):
 
 class EditReleaseForm(FlaskForm):
   version = StringField('Version', validators=[InputRequired(), Length(min=1, max=64)])
-  release_notes = StringField('Release notes URL', validators=URL())
+  release_notes = StringField('Release notes URL', validators=[URL()])
   submit = SubmitField('OK')
 
 class EditInstanceForm(FlaskForm):
