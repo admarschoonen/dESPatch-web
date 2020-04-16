@@ -4,6 +4,7 @@ from app.forms import LoginForm, RegistrationForm, EditProfileForm, EditProductF
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Product, Release, Instance
 from werkzeug.urls import url_parse
+from werkzeug.utils import secure_filename
 from app.forms import ResetPasswordRequestForm
 from app.email import send_password_reset_email
 from datetime import datetime
@@ -141,9 +142,10 @@ def add_release():
 
   if form.validate_on_submit():
     release = Release(version=form.version.data)
-    release.filename = randomword(32)
-    release.release_notes = form.release_notes.data
     release.timestamp = datetime.utcnow()
+    release.filename = secure_filename(form.file.data.filename)
+    form.file.data.save(release.filename)
+    release.release_notes = form.release_notes.data
     release.product_id = product.id
     db.session.add(release)
     db.session.commit()
@@ -170,7 +172,8 @@ def edit_release():
 
   if form.validate_on_submit():
     release.version = form.version.data
-    #release.filename = form.filename.data
+    release.filename = secure_filename(form.file.data.filename)
+    form.file.data.save(release.filename)
     release.release_notes = form.release_notes.data
     release.timestamp = datetime.utcnow()
     db.session.commit()
@@ -178,7 +181,7 @@ def edit_release():
     return redirect(url_for('product', product_id=product.id))
   elif request.method == 'GET':
     form.version.data = release.version
-   # form.filename.data = release.filename
+    #form.file.data = release.filename
     form.release_notes.data = release.release_notes
   return render_template('edit_release.html', title='Edit release', 
     release_id=release_id, product_id=product_id, form=form)

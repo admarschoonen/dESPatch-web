@@ -1,5 +1,7 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
+#from wtforms.validators import ValidationError, InputRequired, Email, EqualTo, DataRequired, URL, Length, MacAddress, FileRequired
 from wtforms.validators import ValidationError, InputRequired, Email, EqualTo, DataRequired, URL, Length, MacAddress
 from app.models import User
 
@@ -45,6 +47,8 @@ class EditProductForm(FlaskForm):
 class EditReleaseForm(FlaskForm):
   version = StringField('Version', validators=[InputRequired(), Length(min=1, max=64)])
   release_notes = StringField('Release notes URL', validators=[URL()])
+  #filename = FileField(validators=[FileRequired()])
+  file = FileField()
   submit = SubmitField('OK')
 
 class EditInstanceForm(FlaskForm):

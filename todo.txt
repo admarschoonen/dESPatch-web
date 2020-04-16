@@ -1,0 +1,5 @@
+* Fileupload:
+  - check size
+  - store in proper location
+  - ask confirmation when editing a release
+  - make file upload mandatory for add_release

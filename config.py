@@ -13,3 +13,7 @@ class Config(object):
   MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
   MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
   ADMINS = ['admar@familieschoonen.nl']
+
+  UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER') or 'files'
+  MAX_CONTENT_PATH = int(os.environ.get('MAX_CONTENT_SIZE') or 16*1024*1024)
+
