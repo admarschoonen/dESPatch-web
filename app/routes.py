@@ -145,29 +145,43 @@ def add_release():
     release.release_notes = form.release_notes.data
     release.timestamp = datetime.utcnow()
     release.product_id = product.id
-    print("release: " + str(release))
     db.session.add(release)
     db.session.commit()
     flash('Your changes have been saved.')
     return redirect(url_for('product', product_id=product.id))
-  return render_template('add_release.html', title='Add release', product_id=product_id, form=form)
+  return render_template('add_release.html', title='Add release', 
+    product_id=product_id, form=form)
 
 @app.route('/edit_release', methods=['GET', 'POST'])
 @login_required
 def edit_release():
   form = EditReleaseForm()
+  product_id = request.args.get('product_id')
+  product = Product.query.filter_by(id=product_id).first()
+
+  if product.user_id != current_user.id:
+    return render_template('403.html', user=user), 403
+
+  release_id = request.args.get('release_id')
+  release = Release.query.filter_by(id=release_id).first()
+
+  if product.user_id != current_user.id:
+    return render_template('403.html', user=user), 403
+
   if form.validate_on_submit():
-    current_user.version = form.version.data
-    current_user.filename = form.filename.data
-    current_user.release_notes = form.release_notes.data
+    release.version = form.version.data
+    #release.filename = form.filename.data
+    release.release_notes = form.release_notes.data
+    release.timestamp = datetime.utcnow()
     db.session.commit()
     flash('Your changes have been saved.')
-    return redirect(url_for('edit_release'))
+    return redirect(url_for('product', product_id=product.id))
   elif request.method == 'GET':
-    form.version.data = current_user.version
-    form.filename.data = current_user.filename
-    form.release_notes.data = current_user.release_notes
-  return render_template('edit_release.html', title='Edit release', form=form)
+    form.version.data = release.version
+   # form.filename.data = release.filename
+    form.release_notes.data = release.release_notes
+  return render_template('edit_release.html', title='Edit release', 
+    release_id=release_id, product_id=product_id, form=form)
 
 @app.route('/edit_instance', methods=['GET', 'POST'])
 @login_required
