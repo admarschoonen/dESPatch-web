@@ -26,10 +26,10 @@ def login():
   if form.validate_on_submit():
     user = User.query.filter_by(username=form.username.data).first()
     if user is None or not user.check_password(form.password.data):
-      flash('Invalid username or password')
+      flash('Invalid username or password', 'warning')
       return redirect(url_for('login'))
     if user.active == False:
-      flash('Account is inactive')
+      flash('Account is inactive; check your e-mail for the actiavtion link or reset your password', 'warning')
       return redirect(url_for('login'))
     login_user(user, remember=form.remember_me.data)
     next_page = request.args.get('next')
@@ -61,7 +61,7 @@ def register():
     db.session.add(user)
     db.session.commit()
     send_password_reset_email(user)
-    flash('Check your email for instructions to reset your password')
+    flash('Check your email for instructions to reset your password', 'info')
     return redirect(url_for('index'))
   return render_template('register.html', title='Register', form=form)
 
@@ -81,7 +81,7 @@ def edit_profile():
   if form.validate_on_submit():
     current_user.username = form.username.data
     db.session.commit()
-    flash('Your changes have been saved.')
+    flash('Your changes have been saved.', 'success')
     return redirect(url_for('edit_profile'))
   elif request.method == 'GET':
     form.username.data = current_user.username
@@ -97,7 +97,7 @@ def add_product():
     product.user_id = current_user.id
     db.session.add(product)
     db.session.commit()
-    flash('Your changes have been saved.')
+    flash('Your changes have been saved.', 'success')
     return redirect(url_for('index'))
   return render_template('add_product.html', title='Add product', form=form)
 
@@ -123,7 +123,7 @@ def edit_product(product_id):
   if form.validate_on_submit():
     product.name = form.name.data
     db.session.commit()
-    flash('Your changes have been saved.')
+    flash('Your changes have been saved.', 'success')
     return redirect(url_for('index'))
   elif request.method == 'GET':
     form.name.data = product.name
@@ -149,7 +149,7 @@ def add_release():
     release.product_id = product.id
     db.session.add(release)
     db.session.commit()
-    flash('Your changes have been saved.')
+    flash('Your changes have been saved.', 'success')
     return redirect(url_for('product', product_id=product.id))
   return render_template('add_release.html', title='Add release', 
     product_id=product_id, form=form)
@@ -177,12 +177,13 @@ def edit_release():
     release.release_notes = form.release_notes.data
     release.timestamp = datetime.utcnow()
     db.session.commit()
-    flash('Your changes have been saved.')
+    flash('Your changes have been saved.', 'success')
     return redirect(url_for('product', product_id=product.id))
   elif request.method == 'GET':
     form.version.data = release.version
     #form.file.data = release.filename
     form.release_notes.data = release.release_notes
+    flash('Warning! Editing of a release is not recommended. Only do this if you''re sure what you are doing!', 'warning')
   return render_template('edit_release.html', title='Edit release', 
     release_id=release_id, product_id=product_id, form=form)
 
@@ -194,7 +195,7 @@ def edit_instance():
     current_user.mac = form.mac.data
     current_user.custom_version = form.custom_version.data
     db.session.commit()
-    flash('Your changes have been saved.')
+    flash('Your changes have been saved.', 'success')
     return redirect(url_for('edit_instance'))
   elif request.method == 'GET':
     form.mac.data = current_user.mac
@@ -210,10 +211,10 @@ def reset_password_request():
     user = User.query.filter_by(email=form.email.data).first()
     if user:
       send_password_reset_email(user)
-      flash('Check your email for instructions to reset your password')
+      flash('Check your email for instructions to reset your password', 'info')
       return redirect(url_for('login'))
     else:
-      flash('E-mail address not found')
+      flash('E-mail address not found', 'danger')
       return redirect(url_for('reset_password_request'))
   return render_template('reset_password_request.html',
       title='Reset Password', form=form)
@@ -230,6 +231,6 @@ def reset_password(token):
     user.set_password(form.password.data)
     user.active = True;
     db.session.commit()
-    flash('Your password has been reset.')
+    flash('Your password has been reset.', 'info')
     return redirect(url_for('login'))
   return render_template('reset_password.html', form=form)
