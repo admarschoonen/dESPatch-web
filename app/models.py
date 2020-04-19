@@ -44,6 +44,7 @@ class Product(db.Model):
   user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
   product_url = db.Column(db.String(128), index=True)
   key = db.Column(db.String(32))
+  version = db.Column(db.String(64), index=True)
   releases = db.relationship('Release', backref='product', lazy='dynamic')
   instances = db.relationship('Instance', backref='product', lazy='dynamic')
 

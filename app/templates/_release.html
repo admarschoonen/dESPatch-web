@@ -1,5 +1,5 @@
 <tr>
-  <td>{{ release.timestamp}}</td>
+  <td>{{ moment(release.timestamp).format('LLL') }}</td>
   <td>{{ release.version }}</td>
   <td>{{ release.filename }}</td>
   <td><a href="{{ release.release_notes }}">release notes</a></td>

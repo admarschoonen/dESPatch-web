@@ -150,6 +150,7 @@ def add_release():
     form.file.data.save(release.filename)
     release.release_notes = form.release_notes.data
     release.product_id = product.id
+    product.version = release.version
     db.session.add(release)
     db.session.commit()
     flash('Your changes have been saved.', 'success')
@@ -181,6 +182,7 @@ def edit_release():
       form.file.data.save(release.filename)
     release.release_notes = form.release_notes.data
     release.timestamp = datetime.utcnow()
+    product.version = release.version
     db.session.commit()
     flash('Your changes have been saved.', 'success')
     return redirect(url_for('product', product_id=product.id))
