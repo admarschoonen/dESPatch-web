@@ -133,7 +133,7 @@ def edit_product(product_id):
 @app.route('/add_release', methods=['GET', 'POST'])
 @login_required
 def add_release():
-  form = EditReleaseForm()
+  form = EditReleaseForm('add', '')
   product_id = request.args.get('product_id')
   product = Product.query.filter_by(id=product_id).first()
 
@@ -157,7 +157,6 @@ def add_release():
 @app.route('/edit_release', methods=['GET', 'POST'])
 @login_required
 def edit_release():
-  form = EditReleaseForm()
   product_id = request.args.get('product_id')
   product = Product.query.filter_by(id=product_id).first()
 
@@ -170,10 +169,13 @@ def edit_release():
   if product.user_id != current_user.id:
     return render_template('403.html', user=user), 403
 
+  form = EditReleaseForm('edit', release.filename)
+
   if form.validate_on_submit():
     release.version = form.version.data
-    release.filename = secure_filename(form.file.data.filename)
-    form.file.data.save(release.filename)
+    if form.file.data:
+      release.filename = secure_filename(form.file.data.filename)
+      form.file.data.save(release.filename)
     release.release_notes = form.release_notes.data
     release.timestamp = datetime.utcnow()
     db.session.commit()
@@ -183,6 +185,7 @@ def edit_release():
     form.version.data = release.version
     #form.file.data = release.filename
     form.release_notes.data = release.release_notes
+    form.current_filename = release.filename
     flash('Warning! Editing of a release is not recommended. Only do this if you''re sure what you are doing!', 'warning')
   return render_template('edit_release.html', title='Edit release', 
     release_id=release_id, product_id=product_id, form=form)

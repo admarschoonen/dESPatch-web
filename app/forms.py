@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
 #from wtforms.validators import ValidationError, InputRequired, Email, EqualTo, DataRequired, URL, Length, MacAddress, FileRequired
-from wtforms.validators import ValidationError, InputRequired, Email, EqualTo, DataRequired, URL, Length, MacAddress
+from wtforms.validators import ValidationError, InputRequired, Email, EqualTo, DataRequired, URL, Length, MacAddress, StopValidation
 from app.models import User
 
 class LoginForm(FlaskForm):
@@ -50,6 +50,20 @@ class EditReleaseForm(FlaskForm):
   #filename = FileField(validators=[FileRequired()])
   file = FileField()
   submit = SubmitField('OK')
+
+  def __init__(self, mode, filename, *args, **kwargs):
+    super(EditReleaseForm, self).__init__(*args, **kwargs)
+    self.mode = mode
+    if self.mode == 'edit':
+      self.file.description = 'Currently stored file: ' + filename
+
+  def validate_file(self, file):
+    if self.mode == 'add':
+      if file.data == None:
+        raise ValidationError('Please upload a binary for ESP32.')
+    if self.mode == 'edit':
+      if file.data == None:
+        raise StopValidation()
 
 class EditInstanceForm(FlaskForm):
   mac = StringField('MAC address', validators=MacAddress())
