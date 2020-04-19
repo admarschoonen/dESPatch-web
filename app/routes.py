@@ -109,7 +109,8 @@ def product(product_id):
   if product.user_id == current_user.id:
     releases = Release.query.filter_by(product_id=product.id)
     latest_release = releases.order_by(desc(Release.timestamp)).first()
-    product.version = latest_release.version
+    if latest_release != None:
+      product.version = latest_release.version
     return render_template('product.html', user=user, product=product, releases=releases, add_product_link=False)
   else:
     return render_template('403.html', user=user), 403
