@@ -9,6 +9,7 @@ from app.forms import ResetPasswordRequestForm
 from app.email import send_password_reset_email
 from datetime import datetime
 import random, string
+from sqlalchemy import desc
 
 @app.route('/')
 @app.route('/index')
@@ -107,6 +108,8 @@ def product(product_id):
   product = Product.query.filter_by(id=product_id).first()
   if product.user_id == current_user.id:
     releases = Release.query.filter_by(product_id=product.id)
+    latest_release = releases.order_by(desc(Release.timestamp)).first()
+    product.version = latest_release.version
     return render_template('product.html', user=user, product=product, releases=releases, add_product_link=False)
   else:
     return render_template('403.html', user=user), 403
