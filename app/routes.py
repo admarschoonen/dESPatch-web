@@ -10,6 +10,7 @@ from app.email import send_password_reset_email
 from datetime import datetime
 import random, string
 from sqlalchemy import desc
+import os
 
 @app.route('/')
 @app.route('/index')
@@ -134,6 +135,18 @@ def edit_product(product_id):
   return render_template('edit_product.html', title='Edit product', 
     product_id=product_id, form=form)
 
+def create_dir(D):
+  d = ''
+  for x in D.split('/'):
+    d = os.path.join(d, x)
+    if os.path.exists(d) == False:
+      os.mkdir(d)
+    if os.path.isdir(d) == False:
+      print('Error: directory ' + d + ' is not a directory')
+      return -1
+
+  return 0
+
 @app.route('/add_release', methods=['GET', 'POST'])
 @login_required
 def add_release():
@@ -148,11 +161,19 @@ def add_release():
     release = Release(version=form.version.data)
     release.timestamp = datetime.utcnow()
     release.filename = secure_filename(form.file.data.filename)
-    form.file.data.save(release.filename)
     release.release_notes = form.release_notes.data
     release.product_id = product.id
     product.version = release.version
     db.session.add(release)
+    db.session.commit()
+
+    d = os.path.join(app.config['UPLOAD_FOLDER'], str(product_id), str(release.id))
+    if create_dir(d) < 0:
+      print('Internal error while creating directory: ' + d)
+      return render_template('500.html', user=user), 500
+
+    f = os.path.join(d, release.filename)
+    form.file.data.save(f)
     db.session.commit()
     flash('Your changes have been saved.', 'success')
     return redirect(url_for('product', product_id=product.id))
@@ -180,7 +201,15 @@ def edit_release():
     release.version = form.version.data
     if form.file.data:
       release.filename = secure_filename(form.file.data.filename)
-      form.file.data.save(release.filename)
+
+      d = os.path.join(app.config['UPLOAD_FOLDER'], str(product_id), str(release_id))
+      if create_dir(d) < 0:
+        print('Internal error while creating directory: ' + d)
+        return render_template('500.html', user=user), 500
+
+      f = os.path.join(d, release.filename)
+      form.file.data.save(f)
+
     release.release_notes = form.release_notes.data
     release.timestamp = datetime.utcnow()
     product.version = release.version
