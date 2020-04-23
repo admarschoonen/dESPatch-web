@@ -11,7 +11,7 @@ class User(UserMixin, db.Model):
   username = db.Column(db.String(64), index=True, unique=True)
   email = db.Column(db.String(120), index=True, unique=True)
   active = db.Column(db.Boolean)
-  user_url = db.Column(db.String(128), index=True)
+  user_url = db.Column(db.String(128), index=True) # REMOVE ME
   password_hash = db.Column(db.String(128))
   products = db.relationship('Product', backref='user', lazy='dynamic')
 
@@ -42,7 +42,8 @@ class Product(db.Model):
   name = db.Column(db.String(64))
   timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
   user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-  product_url = db.Column(db.String(128), index=True)
+  product_url = db.Column(db.String(128), index=True) # REMOVE ME
+  update_interval = db.Column(db.Integer, default=24 * 3600)
   key = db.Column(db.String(32))
   version = db.Column(db.String(64), index=True)
   releases = db.relationship('Release', backref='product', lazy='dynamic')
@@ -58,6 +59,7 @@ class Release(db.Model):
   filename = db.Column(db.String(120), index=True)
   release_notes = db.Column(db.String(128), index=True)
   product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+  update_interval = db.Column(db.Integer, default=24*3600)
 
   def __repr__(self):
     return '<Release {}, product_id: {}>'.format(self.version, self.product_id)

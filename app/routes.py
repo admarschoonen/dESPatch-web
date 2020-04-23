@@ -11,6 +11,7 @@ from datetime import datetime
 import random, string
 from sqlalchemy import desc
 import os
+import json
 
 @app.route('/')
 @app.route('/index')
@@ -147,12 +148,38 @@ def create_dir(D):
 
   return 0
 
+def create_json(product_id, release):
+  update_interval = release.update_interval
+  if update_interval == None:
+    update_interval = 10
+
+  j = {}
+  j['version'] = release.version
+  j['filename'] = os.path.join(str(release.id), release.filename)
+  j['updateInterval'] = release.update_interval
+
+  jsonfile = os.path.join(app.config['UPLOAD_FOLDER'], 
+    str(product_id), 'despatch.json')
+
+  ret = 0
+  try:
+    with open(jsonfile, 'w') as outfile:
+      json.dump(j, outfile)
+  except:
+    ret = -1
+
+  return ret
+
 @app.route('/add_release', methods=['GET', 'POST'])
 @login_required
 def add_release():
   form = EditReleaseForm('add', '')
   product_id = request.args.get('product_id')
   product = Product.query.filter_by(id=product_id).first()
+  form.update_interval.data = product.update_interval
+  
+  if form.update_interval.data == None:
+    form.update_interval.data = 24 * 3600
 
   if product.user_id != current_user.id:
     return render_template('403.html', user=user), 403
@@ -163,6 +190,7 @@ def add_release():
     release.filename = secure_filename(form.file.data.filename)
     release.release_notes = form.release_notes.data
     release.product_id = product.id
+    release.update_interval = form.update_interval.data
     product.version = release.version
     db.session.add(release)
     db.session.commit()
@@ -174,8 +202,11 @@ def add_release():
 
     f = os.path.join(d, release.filename)
     form.file.data.save(f)
-    db.session.commit()
-    flash('Your changes have been saved.', 'success')
+  
+    if create_json(product.id, release) == 0:
+      flash('Your changes have been saved.', 'success')
+    else:
+      flash('Oops. Something went wrong', 'error')
     return redirect(url_for('product', product_id=product.id))
   return render_template('add_release.html', title='Add release', 
     product_id=product_id, form=form)
@@ -213,14 +244,20 @@ def edit_release():
     release.release_notes = form.release_notes.data
     release.timestamp = datetime.utcnow()
     product.version = release.version
+    release.update_interval = form.update_interval.data
     db.session.commit()
-    flash('Your changes have been saved.', 'success')
+
+    if create_json(product.id, release) == 0:
+      flash('Your changes have been saved.', 'success')
+    else:
+      flash('Oops. Something went wrong', 'error')
     return redirect(url_for('product', product_id=product.id))
   elif request.method == 'GET':
     form.version.data = release.version
     #form.file.data = release.filename
     form.release_notes.data = release.release_notes
     form.current_filename = release.filename
+    form.update_interval.data = release.update_interval
     flash('Warning! Editing of a release is not recommended. Only do this if you''re sure what you are doing!', 'warning')
   return render_template('edit_release.html', title='Edit release', 
     release_id=release_id, product_id=product_id, form=form)

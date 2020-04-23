@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, IntegerField
 #from wtforms.validators import ValidationError, InputRequired, Email, EqualTo, DataRequired, URL, Length, MacAddress, FileRequired
-from wtforms.validators import ValidationError, InputRequired, Email, EqualTo, DataRequired, URL, Length, MacAddress, StopValidation
+from wtforms.validators import ValidationError, InputRequired, Email, EqualTo, DataRequired, URL, Length, MacAddress, StopValidation, NumberRange
 from app.models import User
 
 class LoginForm(FlaskForm):
@@ -47,7 +47,7 @@ class EditProductForm(FlaskForm):
 class EditReleaseForm(FlaskForm):
   version = StringField('Version', validators=[InputRequired(), Length(min=1, max=64)])
   release_notes = StringField('Release notes URL', validators=[URL()])
-  #filename = FileField(validators=[FileRequired()])
+  update_interval = IntegerField('Update interval (seconds)', validators=[InputRequired(), NumberRange(min=10, max=None, message='Minimum value is 10')])
   file = FileField()
   submit = SubmitField('OK')
 
