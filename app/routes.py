@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, send_from_directory
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, EditProductForm, EditReleaseForm, EditInstanceForm, ResetPasswordForm
 from flask_login import current_user, login_user, logout_user, login_required
@@ -309,3 +309,13 @@ def reset_password(token):
     flash('Your password has been reset.', 'info')
     return redirect(url_for('login'))
   return render_template('reset_password.html', form=form)
+
+@app.route(os.path.join('/files/', '<path:filename>'))
+def download_file(filename):
+  upload_folder = app.config['UPLOAD_FOLDER']
+
+  if upload_folder[0] != '/':
+    upload_folder = os.path.join('/home/admar/Documents/dESPatch-web/', upload_folder)
+
+  return send_from_directory(upload_folder, filename)
+
