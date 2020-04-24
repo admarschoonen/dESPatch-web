@@ -12,6 +12,7 @@ import random, string
 from sqlalchemy import desc
 import os
 import json
+import base64
 
 @app.route('/')
 @app.route('/index')
@@ -312,10 +313,43 @@ def reset_password(token):
 
 @app.route(os.path.join('/files/', '<path:filename>'))
 def download_file(filename):
+  auth_invalid = True
+
+  tmp = filename.split('/')
+  product_id = int(tmp[0])
+  product = Product.query.filter_by(id=product_id).first()
+
+  if product == None:
+      return render_template('404.html', user=user), 404
+
+  if current_user.is_authenticated and product.user_id == current_user.id:
+    auth_invalid = False
+
+  hdr_key = request.headers.get('Authorization')
+  if hdr_key != None and hdr_key.startswith('Basic '):
+    # Strip 'Basic ' from hdr_key and decode Base64 data
+    tmp = hdr_key[6:]
+    user_key = str(base64.b64decode(tmp))
+    
+    # Strip 1st and 2nd characters (b') and last char (')
+    user_key = user_key[2:-1]
+
+    if user_key.startswith('api:'):
+      # Strip 'api:' and compare keys
+      key = user_key[4:]
+      if key == product.key:
+        auth_invalid = False
+  
+  if auth_invalid:
+    return render_template('403.html', user=user), 403
+
   upload_folder = app.config['UPLOAD_FOLDER']
 
   if upload_folder[0] != '/':
-    upload_folder = os.path.join('/home/admar/Documents/dESPatch-web/', upload_folder)
+    d = os.path.realpath(__file__)
+    tmp = d.split('/')
+    upload_folder = os.path.join('/'.join(tmp[0:len(tmp) - 2]), upload_folder)
 
+  print("sending file " + os.path.join(upload_folder, filename))
   return send_from_directory(upload_folder, filename)
 
