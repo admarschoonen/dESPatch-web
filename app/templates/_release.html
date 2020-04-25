@@ -1,7 +1,7 @@
 <tr>
   <td>{{ moment(release.timestamp).format('LLL') }}</td>
   <td>{{ release.version }}</td>
-  <td>{{ release.filename }}</td>
+  <td><a href="{{ links[loop.index0] }}">{{ release.filename }}</a></td>
   <td><a href="{{ release.release_notes }}">release notes</a></td>
   <td><a href="{{ url_for('edit_release', product_id=product.id, release_id=release.id) }}">(edit release)</a></td>
 </tr>

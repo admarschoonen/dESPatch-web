@@ -109,12 +109,20 @@ def add_product():
 @login_required
 def product(product_id):
   product = Product.query.filter_by(id=product_id).first()
+  if product == None:
+    return render_template('404.html', user=user), 404
+
   if product.user_id == current_user.id:
     releases = Release.query.filter_by(product_id=product.id)
     latest_release = releases.order_by(desc(Release.timestamp)).first()
     if latest_release != None:
       product.version = latest_release.version
-    return render_template('product.html', user=user, product=product, releases=releases, add_product_link=False)
+
+    links = []
+    for release in releases:
+      l = os.path.join('/files', str(product.id), str(release.id), release.filename)
+      links.append(l)
+    return render_template('product.html', links=links, user=user, product=product, releases=releases, add_product_link=False)
   else:
     return render_template('403.html', user=user), 403
 
