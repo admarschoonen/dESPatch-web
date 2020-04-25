@@ -122,7 +122,9 @@ def product(product_id):
     for release in releases:
       l = os.path.join('/files', str(product.id), str(release.id), release.filename)
       links.append(l)
-    return render_template('product.html', links=links, user=user, product=product, releases=releases, add_product_link=False)
+
+    hostname = app.config['HOSTNAME']
+    return render_template('product.html', hostname=hostname, links=links, user=user, product=product, releases=releases, add_product_link=False)
   else:
     return render_template('403.html', user=user), 403
 

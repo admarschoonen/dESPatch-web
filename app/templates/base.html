@@ -3,6 +3,12 @@
 {% block scripts %}
   {{ super() }}
   {{ moment.include_moment() }}
+
+  <link rel="stylesheet"
+        href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.0/styles/arduino-light.min.css">
+  <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
 {% endblock %}
 
 {% block title %}

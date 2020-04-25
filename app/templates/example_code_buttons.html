@@ -1,0 +1,55 @@
+<script>
+function toggleUpdateAfterConfirmation() {
+  var x = document.getElementById("updateAfterConfirmationDiv");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+
+  var x = document.getElementById("updateImmediatelyDiv");
+  x.style.display = "none";
+
+  var x = document.getElementById("updateManuallyDiv");
+  x.style.display = "none";
+}
+</script>
+
+<script>
+function toggleImmediately() {
+  var x = document.getElementById("updateAfterConfirmationDiv");
+  x.style.display = "none";
+
+  var x = document.getElementById("updateImmediatelyDiv");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+
+  var x = document.getElementById("updateManuallyDiv");
+  x.style.display = "none";
+}
+</script>
+
+<script>
+function toggleManually() {
+  var x = document.getElementById("updateAfterConfirmationDiv");
+  x.style.display = "none";
+
+  var x = document.getElementById("updateImmediatelyDiv");
+  x.style.display = "none";
+
+  var x = document.getElementById("updateManuallyDiv");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+</script>
+
+<button type="button" class="btn btn-default" onclick="toggleUpdateAfterConfirmation()">Update after confirmation</button>
+<button type="button" class="btn btn-default" onclick="toggleImmediately()">Update immediately</button>
+<button type="button" class="btn btn-default" onclick="toggleManually()">Update manually</button>
+
