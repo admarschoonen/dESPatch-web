@@ -344,9 +344,9 @@ def download_file(filename):
     # Strip 1st and 2nd characters (b') and last char (')
     user_key = user_key[2:-1]
 
-    if user_key.startswith('api:'):
-      # Strip 'api:' and compare keys
-      key = user_key[4:]
+    if user_key.startswith('apikey:'):
+      # Strip 'apikey:' and compare keys
+      key = user_key[7:]
       if key == product.key:
         auth_invalid = False
   
