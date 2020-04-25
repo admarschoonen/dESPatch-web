@@ -7,14 +7,21 @@
   <h1>{{ user.username }}</h1>
   {% endif %}
 
+  <p>Product details:</p>
   {% include '_products_table_head.html' %}
   {% include '_product.html' %}
   {% include '_products_table_tail.html' %}
+  <p></p>
+  <br>
+  <p>Example code:</p>
+  {% include 'example_code.html' %}
+  <p></p>
   <br>
   <p>Releases:</p>
   {% include '_releases.html' %}
   <br>
-  <p>Example code:</p>
-  {% include 'example_code.html' %}
+  <p>Instances:</p>
+  {% include '_instances.html' %}
+  <br>
 {% endblock %}
 
