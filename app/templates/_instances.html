@@ -1,11 +1,13 @@
-<table style="width: 80%">
-  <tr>
-    <th>MAC address</th>
-    <th>Current version</th>
-    <th>Custom version</th>
-    <th>Last time seen</th>
-  </tr>
-  {% for instance in instances %}
-    {% include '_instance.html' %}
-  {% endfor %}
-</table>
+{% for instance in instances %}
+  {% if loop.first %}
+    {% include '_instances_table_head.html' %}
+  {% endif %}
+
+  {% include '_instance.html' %}
+
+  {% if loop.last %}
+    {% include '_instances_table_tail.html' %}
+  {% endif %}
+{% else %}
+  <p>You don't have any instances for this product yet. Connect an ESP32-based product to the internet with one of the example codes above to see it here.</p>
+{% endfor %}

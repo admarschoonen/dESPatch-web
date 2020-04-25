@@ -3,4 +3,5 @@
   <td> {{ instance.current_version }} </td>
   <td> {% if instance.custom_version %}{{ instance.custom_version }}{% endif %} </td>
   <td> {{ instance.last_time_seen }} </td>
+  <td><a href="{{ url_for('edit_instance', product_id=product.id, instance_id=instance.id) }}">(edit instance)</a></td>
 <tr>

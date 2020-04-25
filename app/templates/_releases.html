@@ -9,7 +9,7 @@
     {% include '_releases_table_tail.html' %}
   {% endif %}
 {% else %}
-  <p>You don't have any releases for this product yet</p>
+  <p>You don't have any releases for this product yet.</p>
 {% endfor %}
 <br>
 <p><a href="{{ url_for('add_release', product_id=product.id) }}">Add a new release</a></p>
