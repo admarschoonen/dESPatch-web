@@ -1,5 +1,5 @@
-* Generate example code 
-* Cleanup models
+* Update example code with PSK
+* Cleanup database models
 * Add cancel buttons
 * Cleanup home / profile
 * Add instances
