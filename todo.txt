@@ -1,5 +1,6 @@
-* Fileupload:
-  - check size
-  - store in proper location
-  - ask confirmation when editing a release
-  - make file upload mandatory for add_release
+* Generate example code 
+* Cleanup models
+* Add cancel buttons
+* Cleanup home / profile
+* Add instances
+* Add signing
