@@ -4,3 +4,6 @@
 * Cleanup home / profile
 * Add instances
 * Add signing
+* Automatically (?) delete old versions that are no longer used (check instance.custom_version!)
+
+* dESPatch-client: see https://arduino.github.io/arduino-cli/platform-specification/ for hooks
