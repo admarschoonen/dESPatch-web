@@ -16,11 +16,13 @@ import base64
 
 @app.route('/')
 @app.route('/index')
-@login_required
 def index():
-  user = User.query.filter_by(username=current_user.username).first()
-  products = Product.query.filter_by(user_id=current_user.id)
-  return render_template('index.html', title='dESPatch-web', products=products, add_product_link=True)
+  if current_user.is_authenticated:
+    user = User.query.filter_by(username=current_user.username).first()
+    products = Product.query.filter_by(user_id=current_user.id)
+    return render_template('index.html', title='dESPatch-web', products=products, add_product_link=True)
+  else:
+    return render_template('description.html', title='dESPatch-web')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
