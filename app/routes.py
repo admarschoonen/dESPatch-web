@@ -8,6 +8,7 @@ from werkzeug.utils import secure_filename
 from app.forms import ResetPasswordRequestForm
 from app.email import send_password_reset_email
 from datetime import datetime
+import pytz
 import random, string
 from sqlalchemy import desc
 import os
@@ -199,7 +200,13 @@ def add_release():
 
   if form.validate_on_submit():
     release = Release(version=form.version.data)
-    release.timestamp = datetime.utcnow()
+    if form.is_newest_version.data:
+      release.timestamp = datetime.utcnow()
+    else:
+      date_time_string = '1970-01-01 00:00:00'
+      date_time_object = datetime.strptime(date_time_string, '%Y-%m-%d %H:%M:%S')
+      timezone = pytz.timezone('UTC')
+      release.timestamp = timezone.localize(date_time_object)
     release.filename = secure_filename(form.file.data.filename)
     release.release_notes = form.release_notes.data
     release.product_id = product.id
@@ -221,6 +228,8 @@ def add_release():
     else:
       flash('Oops. Something went wrong', 'error')
     return redirect(url_for('product', product_id=product.id))
+  elif request.method == 'GET':
+    form.is_newest_version.data = True
   return render_template('add_release.html', title='Add release', 
     product_id=product_id, form=form)
 
@@ -255,7 +264,8 @@ def edit_release():
       form.file.data.save(f)
 
     release.release_notes = form.release_notes.data
-    release.timestamp = datetime.utcnow()
+    if form.is_newest_version.data:
+      release.timestamp = datetime.utcnow()
     product.version = release.version
     release.update_interval = form.update_interval.data
     db.session.commit()
@@ -271,6 +281,7 @@ def edit_release():
     form.release_notes.data = release.release_notes
     form.current_filename = release.filename
     form.update_interval.data = release.update_interval
+    form.is_newest_version.data = False
     flash('Warning! Editing of a release is not recommended. Only do this if you''re sure what you are doing!', 'warning')
   return render_template('edit_release.html', title='Edit release', 
     release_id=release_id, product_id=product_id, form=form)
