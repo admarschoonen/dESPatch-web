@@ -1,9 +1,13 @@
+* Add latest_release_id to product + generate json whenever it is updated + remove release.timestamp kludge
 * Update example code with PSK
 * Cleanup database models
 * Add cancel buttons
 * Cleanup home / profile
 * Add instances
 * Add signing
-* Automatically (?) delete old versions that are no longer used (check instance.custom_version!)
+* Delete old binary after uploading a new binary with new name while editing a release
+* Automatically delete old versions that are no longer used (check instance.custom_version!)
+* Auto delete unused versions should be a product setting (for -dev projects, user should enable this, for -release projects user can leave it disabled)
+* Add delete old versions button to manually delete old versions
 
 * dESPatch-client: see https://arduino.github.io/arduino-cli/platform-specification/ for hooks
