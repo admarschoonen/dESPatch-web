@@ -49,7 +49,7 @@ class EditReleaseForm(FlaskForm):
   release_notes = StringField('Release notes URL', validators=[URL()])
   update_interval = IntegerField('Update interval (seconds)', validators=[InputRequired(), NumberRange(min=10, max=None, message='Minimum value is 10')])
   file = FileField()
-  is_newest_version = BooleanField('Make this release the latest version')
+  is_latest_release = BooleanField('Make this release the latest version')
   submit = SubmitField('OK')
 
   def __init__(self, mode, filename, *args, **kwargs):

@@ -117,7 +117,7 @@ def product(product_id):
 
   if product.user_id == current_user.id:
     releases = Release.query.filter_by(product_id=product.id)
-    latest_release = releases.order_by(desc(Release.timestamp)).first()
+    latest_release = Release.query.filter_by(id=product.latest_release_id).first()
     if latest_release != None:
       product.version = latest_release.version
 
@@ -162,7 +162,7 @@ def create_dir(D):
 
   return 0
 
-def create_json(product_id, release):
+def create_json(release):
   update_interval = release.update_interval
   if update_interval == None:
     update_interval = 10
@@ -173,7 +173,7 @@ def create_json(product_id, release):
   j['updateInterval'] = release.update_interval
 
   jsonfile = os.path.join(app.config['UPLOAD_FOLDER'], 
-    str(product_id), 'despatch.json')
+    str(release.product_id), 'despatch.json')
 
   ret = 0
   try:
@@ -200,20 +200,12 @@ def add_release():
 
   if form.validate_on_submit():
     release = Release(version=form.version.data)
-    if form.is_newest_version.data:
-      release.timestamp = datetime.utcnow()
-    else:
-      date_time_string = '1970-01-01 00:00:00'
-      date_time_object = datetime.strptime(date_time_string, '%Y-%m-%d %H:%M:%S')
-      timezone = pytz.timezone('UTC')
-      release.timestamp = timezone.localize(date_time_object)
+    release.timestamp = datetime.utcnow()
+
     release.filename = secure_filename(form.file.data.filename)
     release.release_notes = form.release_notes.data
     release.product_id = product.id
     release.update_interval = form.update_interval.data
-    product.version = release.version
-    db.session.add(release)
-    db.session.commit()
 
     d = os.path.join(app.config['UPLOAD_FOLDER'], str(product_id), str(release.id))
     if create_dir(d) < 0:
@@ -223,13 +215,24 @@ def add_release():
     f = os.path.join(d, release.filename)
     form.file.data.save(f)
   
-    if create_json(product.id, release) == 0:
+    success = True
+    print('add_release: is_latest_release: ' + str(form.is_latest_release.data))
+    if form.is_latest_release.data:
+      product.latest_release_id = release.id
+      #product.version = release.version
+      if create_json(release) != 0:
+        success = False
+
+    if success:
+      db.session.add(release)
+      db.session.commit()
       flash('Your changes have been saved.', 'success')
     else:
       flash('Oops. Something went wrong', 'error')
+
     return redirect(url_for('product', product_id=product.id))
   elif request.method == 'GET':
-    form.is_newest_version.data = True
+    form.is_latest_release.data = True
   return render_template('add_release.html', title='Add release', 
     product_id=product_id, form=form)
 
@@ -264,16 +267,24 @@ def edit_release():
       form.file.data.save(f)
 
     release.release_notes = form.release_notes.data
-    if form.is_newest_version.data:
-      release.timestamp = datetime.utcnow()
-    product.version = release.version
+    release.timestamp = datetime.utcnow()
     release.update_interval = form.update_interval.data
-    db.session.commit()
 
-    if create_json(product.id, release) == 0:
+    success = True
+    print('edit_release: is_latest_release: ' + str(form.is_latest_release.data))
+    if form.is_latest_release.data:
+      product.latest_release_id = release.id
+      #product.version = release.version
+      if create_json(release) != 0:
+        success = False
+
+    if success:
+      db.session.add(release)
+      db.session.commit()
       flash('Your changes have been saved.', 'success')
     else:
       flash('Oops. Something went wrong', 'error')
+
     return redirect(url_for('product', product_id=product.id))
   elif request.method == 'GET':
     form.version.data = release.version
@@ -281,7 +292,7 @@ def edit_release():
     form.release_notes.data = release.release_notes
     form.current_filename = release.filename
     form.update_interval.data = release.update_interval
-    form.is_newest_version.data = False
+    form.is_latest_release.data = False
     flash('Warning! Editing of a release is not recommended. Only do this if you''re sure what you are doing!', 'warning')
   return render_template('edit_release.html', title='Edit release', 
     release_id=release_id, product_id=product_id, form=form)

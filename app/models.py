@@ -42,10 +42,11 @@ class Product(db.Model):
   name = db.Column(db.String(64))
   timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
   user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+  latest_release_id = db.Column(db.Integer, index=True)
   product_url = db.Column(db.String(128), index=True) # REMOVE ME
   update_interval = db.Column(db.Integer, default=24 * 3600)
   key = db.Column(db.String(32))
-  version = db.Column(db.String(64), index=True)
+  version = db.Column(db.String(64), index=True) # REMOVE ME
   releases = db.relationship('Release', backref='product', lazy='dynamic')
   instances = db.relationship('Instance', backref='product', lazy='dynamic')
 
