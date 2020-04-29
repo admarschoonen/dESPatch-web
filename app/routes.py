@@ -117,7 +117,7 @@ def product(product_id):
 
   if product.user_id == current_user.id:
     releases = Release.query.filter_by(product_id=product.id)
-    latest_release = Release.query.filter_by(id=product.latest_release_id).first()
+    latest_release = releases.filter_by(id=product.latest_release_id).first()
     if latest_release != None:
       product.version = latest_release.version
 
@@ -187,16 +187,29 @@ def create_json(release):
 @app.route('/add_release', methods=['GET', 'POST'])
 @login_required
 def add_release():
-  form = EditReleaseForm('add', '')
   product_id = request.args.get('product_id')
   product = Product.query.filter_by(id=product_id).first()
+
+  if product == None:
+    # Product does not exist
+    return render_template('404.html', user=user), 404
+
+  if product.user_id != current_user.id:
+    # User is not product owner
+    return render_template('403.html', user=user), 403
+
+  # Create list of versions that already exist
+  versions = []
+  releases = Release.query.filter_by(product_id=product.id)
+  if releases != None:
+    for release in releases:
+      versions.append(release.version)
+
+  form = EditReleaseForm('add', '', versions)
   form.update_interval.data = product.update_interval
   
   if form.update_interval.data == None:
     form.update_interval.data = 24 * 3600
-
-  if product.user_id != current_user.id:
-    return render_template('403.html', user=user), 403
 
   if form.validate_on_submit():
     release = Release(version=form.version.data)
@@ -216,10 +229,8 @@ def add_release():
     form.file.data.save(f)
   
     success = True
-    print('add_release: is_latest_release: ' + str(form.is_latest_release.data))
     if form.is_latest_release.data:
       product.latest_release_id = release.id
-      #product.version = release.version
       if create_json(release) != 0:
         success = False
 
@@ -239,19 +250,40 @@ def add_release():
 @app.route('/edit_release', methods=['GET', 'POST'])
 @login_required
 def edit_release():
-  product_id = request.args.get('product_id')
+  product_id = int(request.args.get('product_id'))
   product = Product.query.filter_by(id=product_id).first()
 
+  if product == None:
+    # Product does not exist
+    return render_template('404.html', user=user), 404
+
   if product.user_id != current_user.id:
+    # User is not product owner
     return render_template('403.html', user=user), 403
 
   release_id = request.args.get('release_id')
   release = Release.query.filter_by(id=release_id).first()
 
-  if product.user_id != current_user.id:
+  if release == None:
+    # Release does not exist
+    return render_template('404.html', user=user), 404
+
+  if release.product_id != product_id:
+    # Release does not belong to product
     return render_template('403.html', user=user), 403
 
-  form = EditReleaseForm('edit', release.filename)
+  # Create list of versions that already exist, excluding version of this
+  # release
+  versions = []
+  releases = Release.query.filter_by(product_id=product.id)
+  if releases != None:
+    for r in releases:
+      if r.version != release.version:
+        versions.append(r.version)
+  else:
+    return render_template('404.html', user=user), 404
+
+  form = EditReleaseForm('edit', release.filename, versions)
 
   if form.validate_on_submit():
     release.version = form.version.data
@@ -271,10 +303,8 @@ def edit_release():
     release.update_interval = form.update_interval.data
 
     success = True
-    print('edit_release: is_latest_release: ' + str(form.is_latest_release.data))
-    if form.is_latest_release.data:
+    if form.is_latest_release.data or product.latest_release_id == release.id:
       product.latest_release_id = release.id
-      #product.version = release.version
       if create_json(release) != 0:
         success = False
 
@@ -288,7 +318,6 @@ def edit_release():
     return redirect(url_for('product', product_id=product.id))
   elif request.method == 'GET':
     form.version.data = release.version
-    #form.file.data = release.filename
     form.release_notes.data = release.release_notes
     form.current_filename = release.filename
     form.update_interval.data = release.update_interval

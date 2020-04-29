@@ -52,11 +52,12 @@ class EditReleaseForm(FlaskForm):
   is_latest_release = BooleanField('Make this release the latest version')
   submit = SubmitField('OK')
 
-  def __init__(self, mode, filename, *args, **kwargs):
+  def __init__(self, mode, filename, versions, *args, **kwargs):
     super(EditReleaseForm, self).__init__(*args, **kwargs)
     self.mode = mode
     if self.mode == 'edit':
       self.file.description = 'Currently stored file: ' + filename
+    self.versions = versions
 
   def validate_file(self, file):
     if self.mode == 'add':
@@ -65,6 +66,11 @@ class EditReleaseForm(FlaskForm):
     if self.mode == 'edit':
       if file.data == None:
         raise StopValidation()
+
+  def validate_version(self, version):
+    for v in self.versions:
+      if v == version.data:
+        raise ValidationError('Version already exists')
 
 class EditInstanceForm(FlaskForm):
   mac = StringField('MAC address', validators=MacAddress())

@@ -1,4 +1,3 @@
-* Add latest_release_id to product + generate json whenever it is updated + remove release.timestamp kludge
 * Update example code with PSK
 * Cleanup database models
 * Add cancel buttons
