@@ -1,3 +1,4 @@
+* Update json when editing instance
 * Update example code with PSK
 * Cleanup database models
 * Add cancel buttons

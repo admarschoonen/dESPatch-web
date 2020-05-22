@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, IntegerField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, IntegerField, SelectField
 #from wtforms.validators import ValidationError, InputRequired, Email, EqualTo, DataRequired, URL, Length, MacAddress, FileRequired
 from wtforms.validators import ValidationError, InputRequired, Email, EqualTo, DataRequired, URL, Length, MacAddress, StopValidation, NumberRange
 from app.models import User
@@ -73,8 +73,7 @@ class EditReleaseForm(FlaskForm):
         raise ValidationError('Version already exists')
 
 class EditInstanceForm(FlaskForm):
-  mac = StringField('MAC address', validators=MacAddress())
-  custom_version = StringField('Custom version', validators=[InputRequired(), Length(min=1, max=64)])
+  custom_version = SelectField('Custom version')
   submit = SubmitField('OK')
 
 class ResetPasswordRequestForm(FlaskForm):

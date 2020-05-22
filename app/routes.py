@@ -331,17 +331,54 @@ def edit_release():
 @app.route('/edit_instance', methods=['GET', 'POST'])
 @login_required
 def edit_instance():
+  instance_id = request.args.get('instance_id')
+  if instance_id == None:
+    return render_template('404.html', user=user), 404
+
+  instance_id = int(instance_id)
+  if instance_id == None:
+    return render_template('404.html', user=user), 404
+
+  instance = Instance.query.filter_by(id=instance_id).first()
+
+  if instance == None:
+    # Instance does not exist
+    return render_template('404.html', user=user), 404
+
+  if instance.product_id == None:
+    return render_template('404.html', user=user), 404
+
+  product = Product.query.filter_by(id=instance.product_id).first()
+
+  if product == None:
+    # Product does not exist
+    return render_template('404.html', user=user), 404
+
+  if product.user_id != current_user.id:
+    # User is not product owner
+    return render_template('403.html', user=user), 403
+
   form = EditInstanceForm()
+
+  versions = [('', 'Always use latest version')]
+  # Create list of tuples with available versions, starting with empty string (indicating no custom version)
+  releases = Release.query.filter_by(product_id=product.id)
+  if releases != None:
+    for r in releases:
+      versions.append((r.version, r.version))
+  else:
+    return render_template('404.html', user=user), 404
+  form.custom_version.choices = versions
+
   if form.validate_on_submit():
-    current_user.mac = form.mac.data
-    current_user.custom_version = form.custom_version.data
+    instance.custom_version = form.custom_version.data
     db.session.commit()
     flash('Your changes have been saved.', 'success')
-    return redirect(url_for('edit_instance'))
+    return redirect(url_for('product', product_id=product.id))
   elif request.method == 'GET':
-    form.mac.data = current_user.mac
-    form.custom_version.data = current_user.custom_version
-  return render_template('edit_instance.html', title='Edit instance', form=form)
+    form.custom_version.data = instance.custom_version
+
+  return render_template('edit_instance.html', title='Edit instance', instance_id=instance_id, form=form)
 
 @app.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
