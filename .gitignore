@@ -3,5 +3,6 @@ __pycache__
 app.db
 logs
 migrations/
+files/
 app/__pycache__
 emumail.sh
