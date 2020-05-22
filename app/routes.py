@@ -129,7 +129,28 @@ def product(product_id):
     hostname = app.config['HOSTNAME']
 
     instances = Instance.query.filter_by(product_id=product_id)
-    return render_template('product.html', hostname=hostname, links=links, user=user, product=product, releases=releases, add_product_link=False, instances=instances)
+
+    i = []
+    for instance in instances:
+      version_found = False
+      version_up_to_date = False
+      instance.version_bg_color = ''
+      instance.version_fg_color = ''
+      if instance.current_version != None:
+        for release in releases:
+          if instance.current_version == release.version:
+            version_found = True
+            break
+        if instance.current_version == product.version:
+          version_up_to_date = True
+      if version_found:
+        if not version_up_to_date:
+          instance.version_fg_color = 'Red'
+      else:
+        instance.version_bg_color = 'Red'
+      i.append(instance)
+
+    return render_template('product.html', hostname=hostname, links=links, user=user, product=product, releases=releases, add_product_link=False, instances=i)
   else:
     return render_template('403.html', user=user), 403
 
