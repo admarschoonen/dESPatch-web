@@ -185,7 +185,18 @@ def create_dir(D):
 
   return 0
 
-def create_json(release):
+def delete_json(product, instance):
+  if instance == None:
+    fname = 'despatch.json'
+  else:
+    fname = 'despatch_' + instance.mac.replace(':', '') + '.json'
+  jsonfile = os.path.join(app.config['UPLOAD_FOLDER'], 
+    str(product.id), fname)
+  print('deleting file ' + jsonfile)
+  os.remove(jsonfile)
+  return
+
+def create_json(release, instance):
   update_interval = release.update_interval
   if update_interval == None:
     update_interval = 10
@@ -195,8 +206,12 @@ def create_json(release):
   j['filename'] = os.path.join(str(release.id), release.filename)
   j['updateInterval'] = release.update_interval
 
+  if instance == None:
+    fname = 'despatch.json'
+  else:
+    fname = 'despatch_' + instance.mac.replace(':', '') + '.json'
   jsonfile = os.path.join(app.config['UPLOAD_FOLDER'], 
-    str(release.product_id), 'despatch.json')
+    str(release.product_id), fname)
 
   ret = 0
   try:
@@ -391,8 +406,16 @@ def edit_instance():
     return render_template('404.html', user=user), 404
   form.custom_version.choices = versions
 
+
   if form.validate_on_submit():
     instance.custom_version = form.custom_version.data
+    if instance.custom_version == None or instance.custom_version == '':
+      delete_json(product, instance)
+    else:
+      custom_release = releases.filter_by(version=instance.custom_version).first()
+      if custom_release == None:
+        return render_template('404.html', user=user), 404
+      create_json(custom_release, instance)
     db.session.commit()
     flash('Your changes have been saved.', 'success')
     return redirect(url_for('product', product_id=product.id))
