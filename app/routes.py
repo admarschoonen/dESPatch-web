@@ -185,7 +185,7 @@ def create_dir(D):
 
   return 0
 
-def delete_json(product, instance):
+def delete_json(product, instance=None):
   if instance == None:
     fname = 'despatch.json'
   else:
@@ -196,7 +196,7 @@ def delete_json(product, instance):
   os.remove(jsonfile)
   return
 
-def create_json(release, instance):
+def create_json(release, instance=None):
   update_interval = release.update_interval
   if update_interval == None:
     update_interval = 10
