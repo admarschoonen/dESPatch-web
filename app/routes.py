@@ -141,6 +141,9 @@ def product(product_id):
           if instance.current_version == release.version:
             version_found = True
             break
+        if instance.custom_version != None and \
+            instance.current_version == instance.custom_version:
+          version_up_to_date = True
         if instance.current_version == product.version:
           version_up_to_date = True
       if version_found:
