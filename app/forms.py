@@ -5,6 +5,9 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextA
 from wtforms.validators import ValidationError, InputRequired, Email, EqualTo, DataRequired, URL, Length, MacAddress, StopValidation, NumberRange
 from app.models import User
 
+class MyInputRequired(InputRequired):
+  field_flags = ()
+
 class LoginForm(FlaskForm):
   username = StringField('Username', validators=[InputRequired()])
   password = PasswordField('Password', validators=[InputRequired()])
@@ -41,16 +44,18 @@ class EditProfileForm(FlaskForm):
         raise ValidationError('Please use a different username.')
 
 class EditProductForm(FlaskForm):
-  name = StringField('Name', validators=[InputRequired(), Length(min=1, max=64)])
+  name = StringField('Name', validators=[MyInputRequired(), Length(min=1, max=64)])
   submit = SubmitField('OK')
+  cancel = SubmitField('Cancel')
 
 class EditReleaseForm(FlaskForm):
-  version = StringField('Version', validators=[InputRequired(), Length(min=1, max=64)])
+  version = StringField('Version', validators=[MyInputRequired(), Length(min=1, max=64)])
   release_notes = StringField('Release notes URL', validators=[URL()])
-  update_interval = IntegerField('Update interval (seconds)', validators=[InputRequired(), NumberRange(min=10, max=None, message='Minimum value is 10')])
+  update_interval = IntegerField('Update interval (seconds)', validators=[MyInputRequired(), NumberRange(min=10, max=None, message='Minimum value is 10')])
   file = FileField()
   is_latest_release = BooleanField('Make this release the latest version')
   submit = SubmitField('OK')
+  cancel = SubmitField('Cancel')
 
   def __init__(self, mode, filename, versions, *args, **kwargs):
     super(EditReleaseForm, self).__init__(*args, **kwargs)
@@ -75,6 +80,7 @@ class EditReleaseForm(FlaskForm):
 class EditInstanceForm(FlaskForm):
   custom_version = SelectField('Custom version')
   submit = SubmitField('OK')
+  cancel = SubmitField('Cancel')
 
 class ResetPasswordRequestForm(FlaskForm):
   email = StringField('Email', validators=[InputRequired(), Email(), Length(min=1, max=120)])

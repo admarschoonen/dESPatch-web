@@ -98,14 +98,18 @@ def edit_profile():
 @login_required
 def add_product():
   form = EditProductForm()
-  if form.validate_on_submit():
-    product = Product(name=form.name.data)
-    product.key = randomword(32)
-    product.user_id = current_user.id
-    db.session.add(product)
-    db.session.commit()
-    flash('Your changes have been saved.', 'success')
-    return redirect(url_for('index'))
+  if request.method == 'POST':
+    if 'submit' in request.form:
+      if form.validate_on_submit():
+        product = Product(name=form.name.data)
+        product.key = randomword(32)
+        product.user_id = current_user.id
+        db.session.add(product)
+        db.session.commit()
+        flash('Your changes have been saved.', 'success')
+        return redirect(url_for('index'))
+    else:
+      return redirect(url_for('index'))
   return render_template('add_product.html', title='Add product', form=form)
 
 @app.route('/product/<product_id>')
@@ -166,11 +170,15 @@ def edit_product(product_id):
   if product.user_id != current_user.id:
     return render_template('403.html', user=user), 403
 
-  if form.validate_on_submit():
-    product.name = form.name.data
-    db.session.commit()
-    flash('Your changes have been saved.', 'success')
-    return redirect(url_for('index'))
+  if request.method == 'POST':
+    if 'submit' in request.form:
+      if form.validate_on_submit():
+        product.name = form.name.data
+        db.session.commit()
+        flash('Your changes have been saved.', 'success')
+        return redirect(url_for('index'))
+    else:
+      return redirect(url_for('index'))
   elif request.method == 'GET':
     form.name.data = product.name
   return render_template('edit_product.html', title='Edit product', 
@@ -252,37 +260,45 @@ def add_release():
   if form.update_interval.data == None:
     form.update_interval.data = 24 * 3600
 
-  if form.validate_on_submit():
-    release = Release(version=form.version.data)
-    release.timestamp = datetime.utcnow()
+  if request.method == 'POST':
+    if 'submit' in request.form:
+      if form.validate_on_submit():
+        release = Release(version=form.version.data)
+        release.timestamp = datetime.utcnow()
+    
+        release.filename = secure_filename(form.file.data.filename)
+        release.release_notes = form.release_notes.data
+        release.product_id = product.id
+        release.update_interval = form.update_interval.data
+    
+        d = os.path.join(app.config['UPLOAD_FOLDER'], str(product_id), str(release.id))
+        if create_dir(d) < 0:
+          print('Internal error while creating directory: ' + d)
+          return render_template('500.html', user=user), 500
+    
+        f = os.path.join(d, release.filename)
+        form.file.data.save(f)
+      
+        success = True
+        db.session.add(release)
+        db.session.commit()
 
-    release.filename = secure_filename(form.file.data.filename)
-    release.release_notes = form.release_notes.data
-    release.product_id = product.id
-    release.update_interval = form.update_interval.data
-
-    d = os.path.join(app.config['UPLOAD_FOLDER'], str(product_id), str(release.id))
-    if create_dir(d) < 0:
-      print('Internal error while creating directory: ' + d)
-      return render_template('500.html', user=user), 500
-
-    f = os.path.join(d, release.filename)
-    form.file.data.save(f)
-  
-    success = True
-    if form.is_latest_release.data:
-      product.latest_release_id = release.id
-      if create_json(release) != 0:
-        success = False
-
-    if success:
-      db.session.add(release)
-      db.session.commit()
-      flash('Your changes have been saved.', 'success')
+        if form.is_latest_release.data:
+          product.latest_release_id = release.id
+          if create_json(release) != 0:
+            success = False
+    
+        if success:
+          db.session.commit()
+          flash('Your changes have been saved.', 'success')
+        else:
+          db.session.delete(release)
+          db.session.commit()
+          flash('Oops. Something went wrong', 'error')
+    
+        return redirect(url_for('product', product_id=product.id))
     else:
-      flash('Oops. Something went wrong', 'error')
-
-    return redirect(url_for('product', product_id=product.id))
+      return redirect(url_for('product', product_id=product.id))
   elif request.method == 'GET':
     form.is_latest_release.data = True
   return render_template('add_release.html', title='Add release', 
@@ -326,37 +342,41 @@ def edit_release():
 
   form = EditReleaseForm('edit', release.filename, versions)
 
-  if form.validate_on_submit():
-    release.version = form.version.data
-    if form.file.data:
-      release.filename = secure_filename(form.file.data.filename)
+  if request.method == 'POST':
+    if 'submit' in request.form:
+      if form.validate_on_submit():
+        release.version = form.version.data
+        if form.file.data:
+          release.filename = secure_filename(form.file.data.filename)
 
-      d = os.path.join(app.config['UPLOAD_FOLDER'], str(product_id), str(release_id))
-      if create_dir(d) < 0:
-        print('Internal error while creating directory: ' + d)
-        return render_template('500.html', user=user), 500
+          d = os.path.join(app.config['UPLOAD_FOLDER'], str(product_id), str(release_id))
+          if create_dir(d) < 0:
+            print('Internal error while creating directory: ' + d)
+            return render_template('500.html', user=user), 500
 
-      f = os.path.join(d, release.filename)
-      form.file.data.save(f)
+          f = os.path.join(d, release.filename)
+          form.file.data.save(f)
 
-    release.release_notes = form.release_notes.data
-    release.timestamp = datetime.utcnow()
-    release.update_interval = form.update_interval.data
+        release.release_notes = form.release_notes.data
+        release.timestamp = datetime.utcnow()
+        release.update_interval = form.update_interval.data
 
-    success = True
-    if form.is_latest_release.data or product.latest_release_id == release.id:
-      product.latest_release_id = release.id
-      if create_json(release) != 0:
-        success = False
+        success = True
+        if form.is_latest_release.data or product.latest_release_id == release.id:
+          product.latest_release_id = release.id
+          if create_json(release) != 0:
+            success = False
 
-    if success:
-      db.session.add(release)
-      db.session.commit()
-      flash('Your changes have been saved.', 'success')
+        if success:
+          db.session.add(release)
+          db.session.commit()
+          flash('Your changes have been saved.', 'success')
+        else:
+          flash('Oops. Something went wrong', 'error')
+
+        return redirect(url_for('product', product_id=product.id))
     else:
-      flash('Oops. Something went wrong', 'error')
-
-    return redirect(url_for('product', product_id=product.id))
+      return redirect(url_for('product', product_id=product.id))
   elif request.method == 'GET':
     form.version.data = release.version
     form.release_notes.data = release.release_notes
@@ -409,19 +429,22 @@ def edit_instance():
     return render_template('404.html', user=user), 404
   form.custom_version.choices = versions
 
-
-  if form.validate_on_submit():
-    instance.custom_version = form.custom_version.data
-    if instance.custom_version == None or instance.custom_version == '':
-      delete_json(product, instance)
+  if request.method == 'POST':
+    if 'submit' in request.form:
+      if form.validate_on_submit():
+        instance.custom_version = form.custom_version.data
+        if instance.custom_version == None or instance.custom_version == '':
+          delete_json(product, instance)
+        else:
+          custom_release = releases.filter_by(version=instance.custom_version).first()
+          if custom_release == None:
+            return render_template('404.html', user=user), 404
+          create_json(custom_release, instance)
+        db.session.commit()
+        flash('Your changes have been saved.', 'success')
+        return redirect(url_for('product', product_id=product.id))
     else:
-      custom_release = releases.filter_by(version=instance.custom_version).first()
-      if custom_release == None:
-        return render_template('404.html', user=user), 404
-      create_json(custom_release, instance)
-    db.session.commit()
-    flash('Your changes have been saved.', 'success')
-    return redirect(url_for('product', product_id=product.id))
+      return redirect(url_for('product', product_id=product.id))
   elif request.method == 'GET':
     form.custom_version.data = instance.custom_version
 

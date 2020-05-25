@@ -1,8 +1,7 @@
+* Update example code with HTTPS
 * Update example code with PSK
 * Cleanup database models
-* Add cancel buttons
 * Cleanup home / profile
-* Add instances
 * Add signing
 * Delete old binary after uploading a new binary with new name while editing a release
 * Automatically delete old versions that are no longer used (check instance.custom_version!)
