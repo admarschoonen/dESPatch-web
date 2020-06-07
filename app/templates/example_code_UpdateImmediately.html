@@ -7,7 +7,7 @@ WiFiManager wifiManager;
 DESPatch dESPatch;
 {{ root_ca }}
 void setup() {
-  const char url[] = "{{ http_or_https }}://apikey:{{ product.key }}@{{ hostname }}/files/{{ product.id }}/despatch.json";
+  const char url[] = "{{ http_or_https }}://apikey:{{ product.key }}@{{ servername }}/files/{{ product.id }}/despatch.json";
   int x;
 
   Serial.begin(115200);

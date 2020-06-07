@@ -150,7 +150,7 @@ def product(product_id):
       l = os.path.join('/', app.config['UPLOAD_FOLDER'], str(product.id), str(release.id), release.filename)
       links.append(l)
 
-    hostname = app.config['HOSTNAME']
+    servername = app.config['SERVERNAME']
 
     instances = Instance.query.filter_by(product_id=product_id)
 
@@ -183,7 +183,7 @@ def product(product_id):
     else:
       http_or_https = 'https'
 
-    return render_template('product.html', hostname=hostname, http_or_https=http_or_https, root_ca=root_ca, links=links, user=user, product=product, releases=releases, add_product_link=False, instances=i)
+    return render_template('product.html', servername=servername, http_or_https=http_or_https, root_ca=root_ca, links=links, user=user, product=product, releases=releases, add_product_link=False, instances=i)
   else:
     return render_template('403.html', user=user), 403
 
