@@ -16,3 +16,9 @@
 * Add delete old versions button to manually delete old versions
 
 * dESPatch-client: see https://arduino.github.io/arduino-cli/platform-specification/ for hooks
+
+* backup:
+  app.db
+  .env
+  files/
+  cert.txt
