@@ -547,3 +547,6 @@ def download_file(filename):
 
   return send_from_directory(upload_folder, filename)
 
+@app.route('/robots.txt')
+def robots_txt():
+  return render_template('robots.txt')
