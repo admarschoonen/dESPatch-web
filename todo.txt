@@ -1,5 +1,11 @@
+* Disable indexing of /files
+* Add admin interface
 * Update example code with HTTPS
 * Update example code with PSK
+* Update library with PSK
+* Update library with HTTPS
+* Allow text / markdown as release notes
+* Add description fields for projects, releases and instances
 * Cleanup database models
 * Cleanup home / profile
 * Add signing
