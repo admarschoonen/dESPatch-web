@@ -112,6 +112,26 @@ def add_product():
       return redirect(url_for('index'))
   return render_template('add_product.html', title='Add product', form=form)
 
+def read_cert():
+  try:
+    cert = 'const char* root_ca = \\\n'
+    with open('cert.txt', 'r') as f:
+      line = f.readline()
+      prev = line
+      while True:
+        line = f.readline()
+        cert = cert + '  "' + prev.rstrip() 
+        if not line:
+          cert = cert + '";'
+          break
+        cert = cert + '" \\\n'
+    
+        prev = line
+    cert = cert + '\n'
+  except:
+    cert = ''
+  return cert
+
 @app.route('/product/<product_id>')
 @login_required
 def product(product_id):
@@ -157,7 +177,13 @@ def product(product_id):
         instance.version_bg_color = 'Red'
       i.append(instance)
 
-    return render_template('product.html', hostname=hostname, links=links, user=user, product=product, releases=releases, add_product_link=False, instances=i)
+    root_ca = read_cert()
+    if root_ca == '':
+      http_or_https = 'http'
+    else:
+      http_or_https = 'https'
+
+    return render_template('product.html', hostname=hostname, http_or_https=http_or_https, root_ca=root_ca, links=links, user=user, product=product, releases=releases, add_product_link=False, instances=i)
   else:
     return render_template('403.html', user=user), 403
 

@@ -5,9 +5,10 @@
 
 WiFiManager wifiManager;
 DESPatch dESPatch;
-
+{{ root_ca }}
 void setup() {
-  int updateResult;
+  const char url[] = "{{ http_or_https }}://apikey:{{ product.key }}@{{ hostname }}/files/{{ product.id }}/despatch.json";
+  int x;
 
   Serial.begin(115200);
 
@@ -31,9 +32,9 @@ void setup() {
   //keep LED on
   digitalWrite(LED_BUILTIN, LED_ON_VALUE_DEFAULT);
 
-  updateResult = dESPatch.configure("http://{{ hostname }}/files/{{ product.id }}/despatch.json", true, 10, true, NULL, NULL);
+  x = dESPatch.configure(url, true, 10, true, NULL, NULL);
   Serial.print("dESPatch.configure() returned with code ");
-  Serial.println(updateResult);
+  Serial.println(x);
 }
 
 void loop(void) {
