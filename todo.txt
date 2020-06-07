@@ -1,3 +1,4 @@
+* Update examples with default update interval
 * Disable indexing of /files
 * Add admin interface
 * Update example code with HTTPS
