@@ -11,3 +11,8 @@ Jinja2
 SQLAlchemy
 Werkzeug
 WTForms
+python-dotenv
+PyJWT
+email_validator
+pytz
+requirements
