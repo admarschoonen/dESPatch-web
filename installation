@@ -10,10 +10,9 @@ python3 -c "import uuid; print(uuid.uuid4().hex)" >> .env
 cat >> .env << EOF
 MAIL_SERVER=localhost
 MAIL_PORT=25
+FLASK_APP=dESPatch-web.py
 EOF
 
-echo "export FLASK_APP=dESPatch-web.py" >> ~/.profile
-export FLASK_APP=dESPatch-web.py
 flask db init
 flask db migrate -m "init"
 flask db upgrade
