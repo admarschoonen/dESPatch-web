@@ -17,4 +17,4 @@ class Config(object):
   UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER') or 'files'
   MAX_CONTENT_LENGTH = int(os.environ.get('MAX_CONTENT_LENGTH') or 16*1024*1024)
 
-  SERVERNAME = os.environ.get('SERVERNAME') or 'HOSTNAME-NOT-SET'
+  SERVERNAME = os.environ.get('SERVERNAME') or 'SERVERNAME-NOT-SET'
