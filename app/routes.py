@@ -127,7 +127,7 @@ def product(product_id):
 
     links = []
     for release in releases:
-      l = os.path.join('/files', str(product.id), str(release.id), release.filename)
+      l = os.path.join('/', app.config['UPLOAD_FOLDER'], str(product.id), str(release.id), release.filename)
       links.append(l)
 
     hostname = app.config['HOSTNAME']
@@ -270,6 +270,8 @@ def add_release():
         release.release_notes = form.release_notes.data
         release.product_id = product.id
         release.update_interval = form.update_interval.data
+        db.session.add(release)
+        db.session.commit()
     
         d = os.path.join(app.config['UPLOAD_FOLDER'], str(product_id), str(release.id))
         if create_dir(d) < 0:
@@ -549,4 +551,4 @@ def download_file(filename):
 
 @app.route('/robots.txt')
 def robots_txt():
-  return render_template('robots.txt')
+  return render_template('robots.txt', files='/files/')
