@@ -1,5 +1,7 @@
 alembic
+email_validator
 Flask
+Flask-Admin
 Flask-Bootstrap
 Flask-Login
 Flask-Mail
@@ -8,11 +10,10 @@ Flask-Moment
 Flask-SQLAlchemy
 Flask-WTF
 Jinja2
+PyJWT
+python-dotenv
+pytz
+requirements
 SQLAlchemy
 Werkzeug
 WTForms
-python-dotenv
-PyJWT
-email_validator
-pytz
-requirements

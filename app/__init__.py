@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, url_for, render_template
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -9,6 +9,8 @@ import os
 from flask_mail import Mail
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
+from flask_admin import Admin, BaseView, expose
+from flask_admin.contrib.sqla import ModelView
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -25,6 +27,34 @@ mail = Mail(app)
 bootstrap = Bootstrap(app)
 
 moment = Moment(app)
+
+from flask_login import current_user, login_user, logout_user, login_required
+
+class ModelView(ModelView):
+  def is_accessible(self):
+    return current_user.is_authenticated and str(current_user.username) == 'admin'
+
+  def inaccessible_callback(self, name, **kwargs):
+    # redirect to login page if user doesn't have access
+    return render_template('admin_403.html'), 403
+
+from app.models import User, Product, Release, Instance
+
+user = User.query.filter_by(username='admin').first()
+if user is None:
+  print('User admin does not exist; creating user admin with password admin')
+  user = User(username='admin', email='')
+  user.active = True
+  user.set_password('admin')
+  db.session.add(user)
+  db.session.commit()
+
+
+admin = Admin(app)
+admin.add_view(ModelView(User, db.session))
+admin.add_view(ModelView(Product, db.session))
+admin.add_view(ModelView(Release, db.session))
+admin.add_view(ModelView(Instance, db.session))
 
 from app import routes, models, errors
 
