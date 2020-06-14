@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, IntegerField, SelectField
 #from wtforms.validators import ValidationError, InputRequired, Email, EqualTo, DataRequired, URL, Length, MacAddress, FileRequired
-from wtforms.validators import ValidationError, InputRequired, Email, EqualTo, DataRequired, URL, Length, MacAddress, StopValidation, NumberRange
+from wtforms.validators import ValidationError, InputRequired, Email, EqualTo, DataRequired, URL, Length, MacAddress, StopValidation, NumberRange, NoneOf
 from app.models import User
 
 class MyInputRequired(InputRequired):
@@ -29,19 +29,51 @@ class RegistrationForm(FlaskForm):
     if user is not None:
       raise ValidationError('Please use a different email address.')
 
-class EditProfileForm(FlaskForm):
-  username = StringField('Username', validators=[InputRequired(), Length(min=1, max=64)])
+class EditAdminProfileForm(FlaskForm):
+  email = StringField('Email', validators=[InputRequired(), Email(), Length(min=1, max=120)])
+  password = PasswordField('Password')
+  password2 = PasswordField(
+    'Repeat Password', validators=[EqualTo('password')])
   submit = SubmitField('OK')
+  cancel = SubmitField('Cancel')
 
-  def __init__(self, original_username, *args, **kwargs):
+  def __init__(self, original_email, *args, **kwargs):
+    super(EditAdminProfileForm, self).__init__(*args, **kwargs)
+    self.original_email = original_email
+    self.password.description = 'Leave the password fields empty if you don''t want to change your password'
+
+  def validate_email(self, email):
+    if email.data != self.original_email:
+      user = User.query.filter_by(email=self.email.data).first()
+      if user is not None:
+        raise ValidationError('Please use a different email.')
+
+class EditProfileForm(FlaskForm):
+  username = StringField('Username', validators=[InputRequired(), Length(min=1, max=64), NoneOf(['admin'])])
+  email = StringField('Email', validators=[InputRequired(), Email(), Length(min=1, max=120)])
+  password = PasswordField('Password')
+  password2 = PasswordField(
+    'Repeat Password', validators=[EqualTo('password')])
+  submit = SubmitField('OK')
+  cancel = SubmitField('Cancel')
+
+  def __init__(self, original_username, original_email, *args, **kwargs):
     super(EditProfileForm, self).__init__(*args, **kwargs)
     self.original_username = original_username
+    self.original_email = original_email
+    self.password.description = 'Leave the password fields empty if you don''t want to change your password'
 
   def validate_username(self, username):
     if username.data != self.original_username:
       user = User.query.filter_by(username=self.username.data).first()
       if user is not None:
         raise ValidationError('Please use a different username.')
+
+  def validate_email(self, email):
+    if email.data != self.original_email:
+      user = User.query.filter_by(email=self.email.data).first()
+      if user is not None:
+        raise ValidationError('Please use a different email.')
 
 class EditProductForm(FlaskForm):
   name = StringField('Name', validators=[MyInputRequired(), Length(min=1, max=64)])
