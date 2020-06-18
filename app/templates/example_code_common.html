@@ -1,0 +1,9 @@
+<pre><code class="C++">
+#include &lt;WiFiManager.h&gt;           // https://github.com/admarschoonen/WiFiManager
+#include &lt;dESPatch.h&gt;
+
+WiFiManager wifiManager;
+DESPatch dESPatch;
+{{ root_ca }}
+void setup() {
+  const char url[] = "{{ http_or_https }}://apikey:{{ product.key }}@{{ servername }}/files/{{ product.id }}/despatch.json";

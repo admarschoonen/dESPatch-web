@@ -1,10 +1,8 @@
-* Update examples with default update interval
-* Disable indexing of /files
-* Add admin interface
-* Update example code with HTTPS
-* Update example code with PSK
-* Update library with PSK
+* Update library with API key
 * Update library with HTTPS
+* Disable indexing of /files
+* Add exit button to admin interface
+* Add back to dESPatch interface button to admin interface
 * Allow text / markdown as release notes
 * Add description fields for projects, releases and instances
 * Cleanup database models

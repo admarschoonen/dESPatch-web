@@ -1,13 +1,6 @@
 <div id="updateImmediatelyDiv" style="display: none;">
-<pre><code class="C++">
-#include &lt;WiFiManager.h&gt;           //https://github.com/admarschoonen/WiFiManager
-#include &lt;dESPatch.h&gt;
-
-WiFiManager wifiManager;
-DESPatch dESPatch;
-{{ root_ca }}
-void setup() {
-  const char url[] = "{{ http_or_https }}://apikey:{{ product.key }}@{{ servername }}/files/{{ product.id }}/despatch.json";
+{% include 'example_code_common.html' %}
+  unsigned long interval = 3600; // Check every hour for new version
   int x;
 
   Serial.begin(115200);
@@ -32,7 +25,7 @@ void setup() {
   //keep LED on
   digitalWrite(LED_BUILTIN, LED_ON_VALUE_DEFAULT);
 
-  x = dESPatch.configure(url, true, 10, true, NULL, NULL);
+  x = dESPatch.configure(url, true, interval, true, NULL, NULL);
   Serial.print("dESPatch.configure() returned with code ");
   Serial.println(x);
 }
