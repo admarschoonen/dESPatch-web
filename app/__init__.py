@@ -1,4 +1,4 @@
-from flask import Flask, url_for, render_template
+from flask import Flask, url_for, render_template, redirect, url_for
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -11,6 +11,7 @@ from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_admin import Admin, BaseView, expose
 from flask_admin.contrib.sqla import ModelView
+import os
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -49,12 +50,23 @@ if user is None:
   db.session.add(user)
   db.session.commit()
 
+class ExitView(BaseView):
+  @expose('/')
+  def index(self):
+    os._exit(0)
+
+class dESPatchView(BaseView):
+  @expose('/')
+  def index(self):
+    return redirect(url_for('index'))
 
 admin = Admin(app)
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Product, db.session))
 admin.add_view(ModelView(Release, db.session))
 admin.add_view(ModelView(Instance, db.session))
+admin.add_view(dESPatchView(name='dESPatch', endpoint='/index'))
+admin.add_view(ExitView(name='Stop server', endpoint='exit'))
 
 from app import routes, models, errors
 
