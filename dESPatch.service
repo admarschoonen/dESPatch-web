@@ -1,0 +1,9 @@
+[Unit]
+Description=dESPatch service.
+
+[Service]
+Type=simple
+ExecStart=gunicorn -b localhost:8000 -w 4 dESPatch-web:app
+
+[Install]
+WantedBy=multi-user.target
