@@ -567,7 +567,7 @@ def download_file(filename):
 
   mac_without_colons = request.args.get('mac')
   ver = request.args.get('version')
-  if mac != None:
+  if mac_without_colons != None:
     try:
       mac = ""
       for i, char in enumerate(mac_without_colons):
@@ -576,21 +576,22 @@ def download_file(filename):
         if i % 2 == 0 and len(mac_without_colons) > i:
           mac = mac + ":" 
 
-      instance = Instance.query.filter_by(mac=mac).first()
-      if instance == None:
-        instance = Instance(mac=mac, product_id=product_id)
+      if len(mac) == 6 * 2 + 5:
+        instance = Instance.query.filter_by(mac=mac).first()
+        if instance == None:
+          instance = Instance(mac=mac, product_id=product_id)
 
-      # save timestamp for last time seen
-      instance.last_time_seen = datetime.utcnow()
+        # save timestamp for last time seen
+        instance.last_time_seen = datetime.utcnow()
 
-      if ver != None:
-        ver = str(base64.b64decode(ver))
-        # Strip 1st and 2nd characters (b') and last char (')
-        ver = ver[2:-1]
-        instance.current_version = ver
+        if ver != None:
+          ver = str(base64.b64decode(ver))
+          # Strip 1st and 2nd characters (b') and last char (')
+          ver = ver[2:-1]
+          instance.current_version = ver
 
-      db.session.add(instance)
-      db.session.commit()
+        db.session.add(instance)
+        db.session.commit()
     except:
       pass
 
