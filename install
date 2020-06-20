@@ -29,9 +29,15 @@ stopasgroup=true
 killasgroup=true
 EOF
 
+echo "!#/bin/sh" > dESPatch-web.sh
+echo "cd `pwd`" >> dESPatch-web.sh
+echo "source venv/bin/activate" >> dESPatch-web.sh
+echo "gunicorn -b localhost:5000 -w 4 dESPatch-web:app" >> dESPatch-web.sh
+
 echo "Start the application with:"
-echo "  gunicorn -b localhost:8000 -w 4 dESPatch-web:app"
+echo "  FIXME: systemd unit file for dESPatch-web.sh"
 echo ""
-echo "Alternatively, copy dESPatch-web.conf to /etc/supervisor/conf.d/ and run:"
-echo "  sudo supervisorctl reload"
+echo "Next: change admin password and create root certificate:"
+echo "  change password: login as user admin with password admin and change the password in your profile"
+echo "  create root certificate: FIXME: description for how to retrieve certificate from firefox"
 
