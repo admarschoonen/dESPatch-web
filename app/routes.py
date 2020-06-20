@@ -565,13 +565,16 @@ def download_file(filename):
     tmp = d.split('/')
     upload_folder = os.path.join('/'.join(tmp[0:len(tmp) - 2]), upload_folder)
 
-  mac = request.args.get('mac')
+  mac_without_colons = request.args.get('mac')
   ver = request.args.get('version')
   if mac != None:
     try:
-      mac = str(base64.b64decode(mac))
-      # Strip 1st and 2nd characters (b') and last char (')
-      mac = mac[2:-1]
+      mac = ""
+      for i, char in enumerate(mac_without_colons):
+        mac = mac + char
+        i = i + 1
+        if i % 2 == 0 and len(mac_without_colons) > i:
+          mac = mac + ":" 
 
       instance = Instance.query.filter_by(mac=mac).first()
       if instance == None:
