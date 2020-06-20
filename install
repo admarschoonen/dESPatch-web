@@ -31,11 +31,14 @@ EOF
 
 echo "#!/bin/sh" > dESPatch-web.sh
 echo "cd `pwd`" >> dESPatch-web.sh
-echo ". venv/bin/activate" >> dESPatch-web.sh
-echo "gunicorn -b localhost:5000 -w 4 dESPatch-web:app" >> dESPatch-web.sh
+cat >> dESPatch-web.sh << EOF
+. venv/bin/activate
+. ./.env
+gunicorn -b localhost:5000 -w 4 dESPatch-web:app
+EOF
 chmod a+x dESPatch-web.sh
 
-echo "Start the application with:"
+echo "Set SERVERNAME in .env, then start the application with:"
 echo "  FIXME: systemd unit file for dESPatch-web.sh"
 echo ""
 echo "Next: change admin password and create root certificate:"
