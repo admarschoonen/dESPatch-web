@@ -25,7 +25,7 @@
   //keep LED on
   digitalWrite(LED_BUILTIN, LED_ON_VALUE_DEFAULT);
 
-  x = dESPatch.configure(url, true, interval, false, NULL, NULL);
+  x = dESPatch.configure(url, true, interval, false{{ root_ca_code }});
   Serial.print("dESPatch.configure() returned with code ");
   Serial.println(x);
 }

@@ -193,10 +193,12 @@ def product(product_id):
     root_ca = read_cert()
     if root_ca == '':
       http_or_https = 'http'
+      root_ca_code = ''
     else:
       http_or_https = 'https'
+      root_ca_code = ', root_ca'
 
-    return render_template('product.html', servername=servername, http_or_https=http_or_https, root_ca=root_ca, links=links, user=user, product=product, releases=releases, add_product_link=False, instances=i)
+    return render_template('product.html', servername=servername, http_or_https=http_or_https, root_ca=root_ca, root_ca_code=root_ca_code, links=links, user=user, product=product, releases=releases, add_product_link=False, instances=i)
   else:
     return render_template('403.html', user=user), 403
 
