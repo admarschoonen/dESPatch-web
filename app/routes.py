@@ -245,7 +245,10 @@ def delete_json(product, instance=None):
   jsonfile = os.path.join(app.config['UPLOAD_FOLDER'], 
     str(product.id), fname)
   print('deleting file ' + jsonfile)
-  os.remove(jsonfile)
+  try:
+    os.remove(jsonfile)
+  except:
+    pass
   return
 
 def create_json(release, instance=None):
