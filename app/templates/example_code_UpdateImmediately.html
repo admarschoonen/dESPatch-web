@@ -35,8 +35,6 @@ void loop(void) {
   static bool ledOn = false;
   unsigned long t_now = millis();
   const int buttonPin = 0;
-  String localVersion = "";
-  String remoteVersion = "";
 
   if (t_now - t_prev &gt;= 500) {
     t_prev = t_now;
