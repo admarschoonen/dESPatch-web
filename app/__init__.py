@@ -11,7 +11,7 @@ from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_admin import Admin, BaseView, expose
 from flask_admin.contrib.sqla import ModelView
-import sys
+import errno
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -53,7 +53,7 @@ if user is None:
 class ExitView(BaseView):
   @expose('/')
   def index(self):
-    sys.exit(4)
+    os._exit(errno.EINTR)
 
 class dESPatchView(BaseView):
   @expose('/')
