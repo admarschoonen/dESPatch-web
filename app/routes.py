@@ -568,25 +568,28 @@ def download_file(filename):
   mac = request.args.get('mac')
   ver = request.args.get('version')
   if mac != None:
-    mac = str(base64.b64decode(mac))
-    # Strip 1st and 2nd characters (b') and last char (')
-    mac = mac[2:-1]
-
-    instance = Instance.query.filter_by(mac=mac).first()
-    if instance == None:
-      instance = Instance(mac=mac, product_id=product_id)
-
-    # save timestamp for last time seen
-    instance.last_time_seen = datetime.utcnow()
-
-    if ver != None:
-      ver = str(base64.b64decode(ver))
+    try:
+      mac = str(base64.b64decode(mac))
       # Strip 1st and 2nd characters (b') and last char (')
-      ver = ver[2:-1]
-      instance.current_version = ver
+      mac = mac[2:-1]
 
-    db.session.add(instance)
-    db.session.commit()
+      instance = Instance.query.filter_by(mac=mac).first()
+      if instance == None:
+        instance = Instance(mac=mac, product_id=product_id)
+
+      # save timestamp for last time seen
+      instance.last_time_seen = datetime.utcnow()
+
+      if ver != None:
+        ver = str(base64.b64decode(ver))
+        # Strip 1st and 2nd characters (b') and last char (')
+        ver = ver[2:-1]
+        instance.current_version = ver
+
+      db.session.add(instance)
+      db.session.commit()
+    except:
+      pass
 
   return send_from_directory(upload_folder, filename)
 
