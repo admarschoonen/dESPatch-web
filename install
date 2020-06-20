@@ -29,7 +29,7 @@ stopasgroup=true
 killasgroup=true
 EOF
 
-echo "!#/bin/sh" > dESPatch-web.sh
+echo "#!/bin/sh" > dESPatch-web.sh
 echo "cd `pwd`" >> dESPatch-web.sh
 echo "source venv/bin/activate" >> dESPatch-web.sh
 echo "gunicorn -b localhost:5000 -w 4 dESPatch-web:app" >> dESPatch-web.sh
