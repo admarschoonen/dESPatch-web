@@ -32,7 +32,7 @@
 
 void loop(void) {
   static unsigned long t_prev = 0;
-  static unsigned long t_prev2 = 0;
+  static unsigned long t_last_check = 0;
   static bool ledOn = false;
   unsigned long t_now = millis();
   const int buttonPin = 0;
@@ -42,13 +42,12 @@ void loop(void) {
     ledOn ^= true;
     digitalWrite(LED_BUILTIN, ledOn);
   }
-  if (t_now - t_prev2 &gt;= 3000) {
+  if (t_now - t_last_check &gt;= dESPatch.getInterval() * 1000) {
     // Manually check for updates and automatically install if there is an update
-    // Only check once per hour to reduce load on the server
     Serial.println("loop(): checking for updates");
     dESPatch.checkForUpdate(true);
     Serial.println("loop(): no update :(");
-    t_prev2 = t_now;
+    t_last_check = t_now;
   }
   // No need for delay since no background task is needed for manual update checks
 }
