@@ -135,9 +135,9 @@ def read_cert():
         line = f.readline()
         cert = cert + '  "' + prev.rstrip() 
         if not line:
-          cert = cert + '";'
+          cert = cert + '\\n";'
           break
-        cert = cert + '" \\\n'
+        cert = cert + '\\n" \\\n'
     
         prev = line
     cert = cert + '\n'
