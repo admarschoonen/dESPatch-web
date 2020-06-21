@@ -38,10 +38,33 @@ gunicorn -b localhost:5000 -w 4 dESPatch-web:app
 EOF
 chmod a+x dESPatch-web.sh
 
-echo "Set SERVERNAME in .env, then start the application with:"
-echo "  FIXME: systemd unit file for dESPatch-web.sh"
-echo ""
-echo "Next: change admin password and create root certificate:"
-echo "  change password: login as user admin with password admin and change the password in your profile"
-echo "  create root certificate: FIXME: description for how to retrieve certificate from firefox"
+cat > dESPatch-web.service << EOF
+[Unit]
+Description=dESPatch-web service
 
+[Service]
+EOF
+echo "ExecStart=`pwd`/dESPatch-web.sh" >> dESPatch-web.service
+cat >> dESPatch-web.service << EOF
+
+[Install]
+WantedBy=multi-user.target
+EOF
+sudo cp dESPatch-web.service /etc/systemd/system
+sudo systemctl enable dESPatch-web
+
+cat << EOF
+Set SERVERNAME in .env, then start the application with:
+ sudo systemctl start dESPatch-web
+
+After that: change admin password and create root certificate:
+* change password: 
+  * login as user admin with password admin 
+  * change the password in your profile
+* create root certificate: 
+  * open the website with Firefox and click on the lock icon left of the URL
+  * click on the arrow to show connection details and click 'More Information'
+  * click on the security tab and then on 'View Certificate'; this will open a new tab
+  * click on the root certificate and then under Download click on 'PEM (cert)'
+  * save the downloaded file in this folder with name 'cert.txt'
+EOF
