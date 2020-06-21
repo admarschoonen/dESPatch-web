@@ -29,27 +29,47 @@ stopasgroup=true
 killasgroup=true
 EOF
 
-echo "#!/bin/sh" > dESPatch-web.sh
-echo "cd `pwd`" >> dESPatch-web.sh
-cat >> dESPatch-web.sh << EOF
-. venv/bin/activate
-. ./.env
-gunicorn -b localhost:5000 -w 4 dESPatch-web:app
-EOF
-chmod a+x dESPatch-web.sh
+# echo "#!/bin/sh" > dESPatch-web.sh
+# echo "cd `pwd`" >> dESPatch-web.sh
+# cat >> dESPatch-web.sh << EOF
+# . venv/bin/activate
+# gunicorn -b localhost:5000 -w 4 dESPatch-web:app
+# EOF
+# chmod a+x dESPatch-web.sh
+
+# cat > dESPatch-web.service << EOF
+# [Unit]
+# Description=dESPatch-web service
+# 
+# [Service]
+# EOF
+# echo "ExecStart=`pwd`/dESPatch-web.sh" >> dESPatch-web.service
+# cat >> dESPatch-web.service << EOF
+# 
+# [Install]
+# WantedBy=multi-user.target
+# EOF
 
 cat > dESPatch-web.service << EOF
 [Unit]
 Description=dESPatch-web service
+After=network-online.target
 
 [Service]
+Type=simple
+User=admar
+Group=admar
 EOF
-echo "ExecStart=`pwd`/dESPatch-web.sh" >> dESPatch-web.service
+echo "WorkingDirectory=/home/admar/dESPatch-web" >> dESPatch-web.service
+echo "EnvironmentFile=/home/admar/dESPatch-web/.env" >> dESPatch-web.service
+echo "ExecStart=/home/admar/dESPatch-web/gunicorn -b localhost:5000 -w 4 dESPatch-web:app" >> dESPatch-web.service
 cat >> dESPatch-web.service << EOF
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
 EOF
+
 sudo cp dESPatch-web.service /etc/systemd/system
 sudo systemctl enable dESPatch-web
 
