@@ -5,13 +5,13 @@ python3 -m venv venv
 source venv/bin/activate
 pip3 install -r requirements.txt
 
-echo -n "export SECRET_KEY=" > .env
+echo -n "SECRET_KEY=" > .env
 python3 -c "import uuid; print(uuid.uuid4().hex)" >> .env
 cat >> .env << EOF
-export MAIL_SERVER=localhost
-export MAIL_PORT=25
-export FLASK_APP=dESPatch-web.py
-export SERVERNAME=SERVERNAME-NOT-SET
+MAIL_SERVER=localhost
+MAIL_PORT=25
+FLASK_APP=dESPatch-web.py
+SERVERNAME=SERVERNAME-NOT-SET
 EOF
 
 flask db init
@@ -60,9 +60,9 @@ Type=simple
 User=admar
 Group=admar
 EOF
-echo "WorkingDirectory=/home/admar/dESPatch-web" >> dESPatch-web.service
-echo "EnvironmentFile=/home/admar/dESPatch-web/.env" >> dESPatch-web.service
-echo "ExecStart=/home/admar/dESPatch-web/gunicorn -b localhost:5000 -w 4 dESPatch-web:app" >> dESPatch-web.service
+echo "WorkingDirectory=`pwd`" >> dESPatch-web.service
+echo "EnvironmentFile=`pwd`/.env" >> dESPatch-web.service
+echo "ExecStart=`pwd`/venv/bin/gunicorn -b localhost:5000 -w 4 dESPatch-web:app" >> dESPatch-web.service
 cat >> dESPatch-web.service << EOF
 Restart=on-failure
 
