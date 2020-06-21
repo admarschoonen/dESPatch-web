@@ -1,8 +1,9 @@
-* Update library with API key
-* Update library with HTTPS
+Bugs:
+* Overview of products does not show latest version
+* Color coding of version in instances overview is not correct when an instance uses a custom version and installed version is different
+
+Features:
 * Disable indexing of /files
-* Add exit button to admin interface
-* Add back to dESPatch interface button to admin interface
 * Allow text / markdown as release notes
 * Add description fields for projects, releases and instances
 * Cleanup database models
