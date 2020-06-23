@@ -53,7 +53,11 @@ if user is None:
 class ExitView(BaseView):
   @expose('/')
   def index(self):
-    os._exit(errno.EINTR)
+    if current_user.is_authenticated and str(current_user.username) == 'admin':
+      os._exit(errno.EINTR)
+    else:
+      return render_template('admin_403.html'), 403
+      
 
 class dESPatchView(BaseView):
   @expose('/')
