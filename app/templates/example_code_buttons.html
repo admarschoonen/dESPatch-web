@@ -1,46 +1,46 @@
 <script>
-function toggleUpdateAfterConfirmation() {
-  var x = document.getElementById("updateAfterConfirmationDiv");
+function toggleBackgroundUpdateAfterConfirmation() {
+  var x = document.getElementById("backgroundUpdateAfterConfirmationDiv");
   if (x.style.display === "none") {
     x.style.display = "block";
   } else {
     x.style.display = "none";
   }
 
-  var x = document.getElementById("updateImmediatelyDiv");
+  var x = document.getElementById("backgroundUpdateImmediatelyDiv");
   x.style.display = "none";
 
-  var x = document.getElementById("updateManuallyDiv");
+  var x = document.getElementById("foregroundUpdateImmediately");
   x.style.display = "none";
 }
 </script>
 
 <script>
-function toggleImmediately() {
-  var x = document.getElementById("updateAfterConfirmationDiv");
+function toggleBackgroundUpdateImmediately() {
+  var x = document.getElementById("backgroundUpdateAfterConfirmationDiv");
   x.style.display = "none";
 
-  var x = document.getElementById("updateImmediatelyDiv");
+  var x = document.getElementById("backgroundUpdateImmediatelyDiv");
   if (x.style.display === "none") {
     x.style.display = "block";
   } else {
     x.style.display = "none";
   }
 
-  var x = document.getElementById("updateManuallyDiv");
+  var x = document.getElementById("foregroundUpdateImmediately");
   x.style.display = "none";
 }
 </script>
 
 <script>
-function toggleManually() {
-  var x = document.getElementById("updateAfterConfirmationDiv");
+function toggleForegroundUpdateImmediately() {
+  var x = document.getElementById("backgroundUpdateAfterConfirmationDiv");
   x.style.display = "none";
 
-  var x = document.getElementById("updateImmediatelyDiv");
+  var x = document.getElementById("backgroundUpdateImmediatelyDiv");
   x.style.display = "none";
 
-  var x = document.getElementById("updateManuallyDiv");
+  var x = document.getElementById("foregroundUpdateImmediately");
   if (x.style.display === "none") {
     x.style.display = "block";
   } else {
@@ -49,5 +49,5 @@ function toggleManually() {
 }
 </script>
 
-<button type="button" class="btn btn-default" onclick="toggleManually()">Update manually</button>
+<button type="button" class="btn btn-default" onclick="toggleForegroundUpdateImmediately()">Foreground update immediately</button>
 

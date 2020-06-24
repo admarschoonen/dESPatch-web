@@ -1,0 +1,48 @@
+<div id="updateImmediatelyDiv" style="display: none;">
+{% include 'example_code_common.html' %}
+  unsigned long interval = 3600; // Check every hour for new version
+  int x;
+
+  Serial.begin(115200);
+
+  //wifiManager.resetSettings();
+  wifiManager.configure("esp32", true, LED_BUILTIN, true, BUTTON_BUILTIN, false);
+
+  //fetches ssid and pass and tries to connect
+  //if it does not connect it starts an access point
+  //and goes into a blocking loop awaiting configuration
+  if (!wifiManager.autoConnect()) {
+    Serial.println("failed to connect and hit timeout");
+    //reset and try again, or maybe put it to deep sleep
+    ESP.restart();
+    delay(1000);
+  }
+
+  //if you get here you have connected to the WiFi
+  Serial.print("connected with address: ");
+  Serial.println(WiFi.localIP());
+
+  //keep LED on
+  digitalWrite(LED_BUILTIN, LED_ON_VALUE_DEFAULT);
+
+  x = dESPatch.configure(url, true, interval, true{{ root_ca_code }});
+  Serial.print("dESPatch.configure() returned with code ");
+  Serial.println(x);
+}
+
+void loop(void) {
+  static unsigned long t_prev = 0;
+  static bool ledOn = false;
+  unsigned long t_now = millis();
+  const int buttonPin = 0;
+
+  if (t_now - t_prev &gt;= 500) {
+    t_prev = t_now;
+    ledOn ^= true;
+    digitalWrite(LED_BUILTIN, ledOn);
+  }
+  delay(10); // Do not remove delay, else dESPatchTask will not be able to run!
+}
+
+</code></pre>
+</div>
