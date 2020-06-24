@@ -60,6 +60,7 @@ void loop(void) {
       if (digitalRead(buttonPin) == LOW) {
         dESPatch.installUpdate();
       }
+      t_button_check = t_now;
     }
   }
   // No need for delay since no background task is needed for forground update checks
