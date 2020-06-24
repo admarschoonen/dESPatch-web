@@ -1,4 +1,4 @@
-<div id="foregroundUpdateImmediatelyDiv" style="display: none;">
+<div id="foregroundUpdateAfterConfirmationDiv" style="display: none;">
 {% include 'example_code_common.html' %}
   unsigned long interval = 0; // Set interval to 0 to check manually
   int x;
@@ -33,6 +33,7 @@
 void loop(void) {
   static unsigned long t_prev = 0;
   static unsigned long t_last_check = 0;
+  static unsigned long t_button_check = 0;
   static bool ledOn = false;
   unsigned long t_now = millis();
   const int buttonPin = 0;
@@ -43,13 +44,25 @@ void loop(void) {
     digitalWrite(LED_BUILTIN, ledOn);
   }
   if (t_now - t_last_check &gt;= dESPatch.getInterval() * 1000) {
-    // Manually check for updates and automatically install if there is an update
+    // Manually check for updates and ask user for confirmation before installing update
     Serial.println("loop(): checking for updates");
-    dESPatch.checkForUpdate(true);
-    Serial.println("loop(): no update :(");
+    dESPatch.checkForUpdate(false);
     t_last_check = t_now;
   }
-  // No need for delay since no background task is needed for foreground update checks
+  if (t_now - t_button_check &gt;= 1000) {
+    if (dESPatch.updateAvailable) {
+      Serial.println(F("Update available"));
+      Serial.print(F("Local version:  "));
+      Serial.println(dESPatch.getLocalVersion());
+      Serial.print(F("Remote version: "));
+      Serial.println(dESPatch.getRemoteVersion());
+      Serial.println("Press button to install the update");
+      if (digitalRead(buttonPin) == LOW) {
+        dESPatch.installUpdate();
+      }
+    }
+  }
+  // No need for delay since no background task is needed for forground update checks
 }
 
 </code></pre>

@@ -10,6 +10,9 @@ function toggleBackgroundUpdateAfterConfirmation() {
   var x = document.getElementById("backgroundUpdateImmediatelyDiv");
   x.style.display = "none";
 
+  var x = document.getElementById("foregroundUpdateAfterConfirmationDiv");
+  x.style.display = "none";
+
   var x = document.getElementById("foregroundUpdateImmediatelyDiv");
   x.style.display = "none";
 }
@@ -21,6 +24,29 @@ function toggleBackgroundUpdateImmediately() {
   x.style.display = "none";
 
   var x = document.getElementById("backgroundUpdateImmediatelyDiv");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+
+  var x = document.getElementById("foregroundUpdateAfterConfirmationDiv");
+  x.style.display = "none";
+
+  var x = document.getElementById("foregroundUpdateImmediatelyDiv");
+  x.style.display = "none";
+}
+</script>
+
+<script>
+function toggleForegroundUpdateAfterConfirmation() {
+  var x = document.getElementById("backgroundUpdateAfterConfirmationDiv");
+  x.style.display = "none";
+
+  var x = document.getElementById("backgroundUpdateImmediatelyDiv");
+  x.style.display = "none";
+
+  var x = document.getElementById("foregroundUpdateAfterConfirmationDiv");
   if (x.style.display === "none") {
     x.style.display = "block";
   } else {
@@ -40,6 +66,9 @@ function toggleForegroundUpdateImmediately() {
   var x = document.getElementById("backgroundUpdateImmediatelyDiv");
   x.style.display = "none";
 
+  var x = document.getElementById("foregroundUpdateAfterConfirmationDiv");
+  x.style.display = "none";
+
   var x = document.getElementById("foregroundUpdateImmediatelyDiv");
   if (x.style.display === "none") {
     x.style.display = "block";
@@ -49,5 +78,6 @@ function toggleForegroundUpdateImmediately() {
 }
 </script>
 
+<button type="button" class="btn btn-default" onclick="toggleForegroundUpdateAfterConfirmation()">Foreground update after confirmation</button>
 <button type="button" class="btn btn-default" onclick="toggleForegroundUpdateImmediately()">Foreground update immediately</button>
 
