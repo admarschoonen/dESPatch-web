@@ -72,15 +72,6 @@ def register():
     return redirect(url_for('index'))
   return render_template('register.html', title='Register', form=form)
 
-@app.route('/user/<username>')
-@login_required
-def user(username):
-  if current_user.is_authenticated == False:
-    return redirect(url_for('index'))
-  user = User.query.filter_by(username=username).first_or_404()
-  products = Product.query.filter_by(user_id=current_user.id)
-  return render_template('user.html', user=user, products=products, add_product_link=True)
-
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
