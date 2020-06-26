@@ -13,6 +13,7 @@ MAIL_PORT=25
 FLASK_APP=dESPatch-web.py
 SERVER_NAME=SERVER_NAME-NOT-SET
 EOF
+chmod go-rwx .env
 
 flask db init
 flask db migrate -m "init"
