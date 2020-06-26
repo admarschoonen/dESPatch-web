@@ -163,7 +163,7 @@ def product(product_id):
       l = os.path.join('/', app.config['UPLOAD_FOLDER'], str(product.id), str(release.id), release.filename)
       links.append(l)
 
-    servername = app.config['SERVERNAME']
+    servername = app.config['SERVER_NAME']
 
     instances = Instance.query.filter_by(product_id=product_id)
 

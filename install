@@ -11,7 +11,7 @@ cat >> .env << EOF
 MAIL_SERVER=localhost
 MAIL_PORT=25
 FLASK_APP=dESPatch-web.py
-SERVERNAME=SERVERNAME-NOT-SET
+SERVER_NAME=SERVER_NAME-NOT-SET
 EOF
 
 flask db init
@@ -74,7 +74,7 @@ sudo cp dESPatch-web.service /etc/systemd/system
 sudo systemctl enable dESPatch-web
 
 cat << EOF
-Set SERVERNAME in .env, then start the application with:
+Set SERVER_NAME in .env, then start the application with:
  sudo systemctl start dESPatch-web
 
 After that: change admin password and create root certificate:
