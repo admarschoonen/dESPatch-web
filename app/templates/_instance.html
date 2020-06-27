@@ -2,7 +2,7 @@
   <td> {{ instance.mac }} </td>
   <td style="background-color:{{ instance.version_bg_color }}; color:{{ instance.version_fg_color }};"> {{ instance.current_version }} </td>
   <td> {% if instance.custom_version %}{{ instance.custom_version }}{% endif %} </td>
-  <td> {{ instance.last_time_seen }} </td>
+  <td> {{ moment(instance.last_time_seen).format('LLL') }} </td>
   <td> {{ instance.description }} </td>
   <td><a href="{{ url_for('edit_instance', instance_id=instance.id) }}">(edit instance)</a></td>
 <tr>
