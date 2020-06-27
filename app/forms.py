@@ -94,7 +94,7 @@ class EditReleaseForm(FlaskForm):
     self.mode = mode
     self.file.description = 'Export a compiled binary from your sketch in Arduino by selecting "Sketch" -> "Export compiled Binary", then upoad it here.'
     if self.mode == 'edit':
-      self.file.description = self.file.description + '\nCurrently stored file: ' + filename
+      self.file.description = self.file.description + '<br><br>Currently stored file: ' + filename
     self.versions = versions
 
   def validate_file(self, file):
