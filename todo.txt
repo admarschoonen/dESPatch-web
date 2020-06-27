@@ -1,6 +1,3 @@
-Bugs:
-* Color coding of version in instances overview is not correct when an instance uses a custom version and installed version is different
-
 Features:
 * Disable indexing of /files
 * Allow text / markdown as release notes
