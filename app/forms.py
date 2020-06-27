@@ -82,7 +82,7 @@ class EditProductForm(FlaskForm):
 
 class EditReleaseForm(FlaskForm):
   version = StringField('Version', validators=[MyInputRequired(), Length(min=1, max=64)])
-  release_notes = StringField('Release notes URL', validators=[URL()])
+  release_notes = StringField('Release notes')
   update_interval = IntegerField('Update interval (seconds)', validators=[MyInputRequired(), NumberRange(min=10, max=None, message='Minimum value is 10')])
   file = FileField()
   is_latest_release = BooleanField('Make this release the latest version')
