@@ -333,6 +333,7 @@ def add_release():
 
         if form.is_latest_release.data:
           product.latest_release_id = release.id
+          product.version = release.version
           if create_json(release) != 0:
             success = False
     
@@ -415,6 +416,7 @@ def edit_release():
         success = True
         if form.is_latest_release.data or product.latest_release_id == release.id:
           product.latest_release_id = release.id
+          product.version = release.version
           if create_json(release) != 0:
             success = False
 
