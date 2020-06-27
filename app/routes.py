@@ -483,6 +483,7 @@ def edit_instance():
   if request.method == 'POST':
     if 'submit' in request.form:
       if form.validate_on_submit():
+        instance.description = form.description.data
         instance.custom_version = form.custom_version.data
         if instance.custom_version == None or instance.custom_version == '':
           delete_json(product, instance)
