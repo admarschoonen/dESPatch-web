@@ -1,6 +1,6 @@
 <div id="foregroundUpdateAfterConfirmationDiv" style="display: none;">
 {% include 'example_code_common.html' %}
-  unsigned long interval = 0; // Set interval to 0 to check manually
+  unsigned long interval = 60; // By default check for updates every 60 seconds
   int x;
 
   Serial.begin(115200);
@@ -25,14 +25,13 @@
   //keep LED on
   digitalWrite(LED_BUILTIN, LED_ON_VALUE_DEFAULT);
 
-  x = dESPatch.configure(url, true, interval, false{{ root_ca_code }});
+  x = dESPatch.configure(url, true, false, interval, false{{ root_ca_code }});
   Serial.print("dESPatch.configure() returned with code ");
   Serial.println(x);
 }
 
 void loop(void) {
   static unsigned long t_prev = 0;
-  static unsigned long t_last_check = 0;
   static unsigned long t_button_check = 0;
   static bool ledOn = false;
   unsigned long t_now = millis();
@@ -43,12 +42,7 @@ void loop(void) {
     ledOn ^= true;
     digitalWrite(LED_BUILTIN, ledOn);
   }
-  if (t_now - t_last_check &gt;= dESPatch.getInterval() * 1000) {
-    // Manually check for updates and ask user for confirmation before installing update
-    Serial.println("loop(): checking for updates");
-    dESPatch.checkForUpdate(false);
-    t_last_check = t_now;
-  }
+  dESPatch.checkForUpdate(false);
   if (t_now - t_button_check &gt;= 1000) {
     if (dESPatch.updateAvailable) {
       Serial.println(F("Update available"));
