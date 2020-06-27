@@ -300,7 +300,6 @@ def add_release():
       versions.append(release.version)
 
   form = EditReleaseForm('add', '', versions)
-  form.update_interval.data = product.update_interval
   
   if form.update_interval.data == None:
     form.update_interval.data = 24 * 3600
@@ -348,6 +347,9 @@ def add_release():
       return redirect(url_for('product', product_id=product.id))
   elif request.method == 'GET':
     form.is_latest_release.data = True
+    form.update_interval.data = product.update_interval
+    if form.update_interval.data == None:
+      form.update_interval.data = product.update_interval
   return render_template('add_release.html', title='Add release', 
     product_id=product_id, form=form)
 
