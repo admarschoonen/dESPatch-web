@@ -110,6 +110,7 @@ class EditReleaseForm(FlaskForm):
         raise ValidationError('Version already exists')
 
 class EditInstanceForm(FlaskForm):
+  description = StringField('Description', validators=[Length(max=128)])
   custom_version = SelectField('Custom version')
   submit = SubmitField('OK')
   cancel = SubmitField('Cancel')

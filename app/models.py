@@ -72,6 +72,7 @@ class Instance(db.Model):
   custom_version = db.Column(db.String(64), index=True)
   last_time_seen = db.Column(db.DateTime, index=True, default=datetime.utcnow)
   product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+  description = db.Column(db.String(128), index=True)
 
   def __repr__(self):
     return '<MAC {}>'.format(self.mac)

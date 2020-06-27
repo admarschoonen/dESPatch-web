@@ -496,6 +496,7 @@ def edit_instance():
       return redirect(url_for('product', product_id=product.id))
   elif request.method == 'GET':
     form.custom_version.data = instance.custom_version
+    form.description.data = instance.description
 
   return render_template('edit_instance.html', title='Edit instance', instance_id=instance_id, form=form)
 
