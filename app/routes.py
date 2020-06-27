@@ -190,6 +190,8 @@ def product(product_id):
       else:
         instance.version_bg_color = 'Red'
       i.append(instance)
+      if instance.description == None
+        instance.description = ''
 
     root_ca = read_cert()
     if root_ca == '':
