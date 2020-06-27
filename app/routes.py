@@ -67,7 +67,8 @@ def register():
     user.set_password(randomword(16))
     db.session.add(user)
     db.session.commit()
-    send_password_reset_email(user)
+    servername = app.config['SERVERNAME']
+    send_password_reset_email(user, servername)
     flash('Check your email for instructions to reset your password', 'info')
     return redirect(url_for('index'))
   return render_template('register.html', title='Register', form=form)
@@ -163,7 +164,7 @@ def product(product_id):
       l = os.path.join('/', app.config['UPLOAD_FOLDER'], str(product.id), str(release.id), release.filename)
       links.append(l)
 
-    servername = app.config['SERVER_NAME']
+    servername = app.config['SERVERNAME']
 
     instances = Instance.query.filter_by(product_id=product_id)
 
@@ -504,7 +505,8 @@ def reset_password_request():
   if form.validate_on_submit():
     user = User.query.filter_by(email=form.email.data).first()
     if user:
-      send_password_reset_email(user)
+      servername = app.config['SERVERNAME']
+      send_password_reset_email(user, servername)
       flash('Check your email for instructions to reset your password', 'info')
       return redirect(url_for('login'))
     else:
