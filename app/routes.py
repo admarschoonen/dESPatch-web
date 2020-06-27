@@ -587,6 +587,7 @@ def download_file(filename):
         instance = Instance.query.filter_by(mac=mac).first()
         if instance == None:
           instance = Instance(mac=mac, product_id=product_id)
+        instance.product_id = product_id
 
         # save timestamp for last time seen
         instance.last_time_seen = datetime.utcnow()
