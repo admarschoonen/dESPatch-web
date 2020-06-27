@@ -1,5 +1,4 @@
 Bugs:
-* Overview of products does not show latest version
 * Color coding of version in instances overview is not correct when an instance uses a custom version and installed version is different
 
 Features:
