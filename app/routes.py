@@ -304,7 +304,7 @@ def add_release():
   form = EditReleaseForm('add', '', versions)
   
   if form.update_interval.data == None:
-    form.update_interval.data = 24 * 3600
+    form.update_interval.data = 600
 
   if request.method == 'POST':
     if 'submit' in request.form:

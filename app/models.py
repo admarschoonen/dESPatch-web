@@ -44,7 +44,7 @@ class Product(db.Model):
   user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
   latest_release_id = db.Column(db.Integer, index=True)
   product_url = db.Column(db.String(128), index=True) # REMOVE ME
-  update_interval = db.Column(db.Integer, default=24 * 3600)
+  update_interval = db.Column(db.Integer, default=600)
   key = db.Column(db.String(32))
   version = db.Column(db.String(64), index=True) # REMOVE ME
   releases = db.relationship('Release', backref='product', lazy='dynamic')
@@ -60,7 +60,7 @@ class Release(db.Model):
   filename = db.Column(db.String(120), index=True)
   release_notes = db.Column(db.String(128), index=True)
   product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
-  update_interval = db.Column(db.Integer, default=24*3600)
+  update_interval = db.Column(db.Integer, default=600)
 
   def __repr__(self):
     return '<Release {}, product_id: {}>'.format(self.version, self.product_id)
