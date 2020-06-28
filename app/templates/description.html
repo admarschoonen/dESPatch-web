@@ -4,12 +4,6 @@
 {% block app_content %}
   <h1>dESPatch</h1>
   <p>dESPatch is a library and webservice to provide easy firmware updates for <a href="https://www.espressif.com/en/products/socs/esp32/overview">ESP32-based</a> products that use the <a href="https://github.com/espressif/arduino-esp32">Arduino-ESP32</a> framework.</p>
-  <p>dESPatch is safe:
-  <ul>
-    <li>dESPatch uses HTTPS encryption to encrypt the traffic between client and server</li>
-    <li>dESPatch verifies the TLS certificates to prevent man-in-the-middle attacs</li>
-    <li>dESPatch uses API keys to prevent unauthorized firmware downloads</li>
-  </ul></p>
   <p>dESPatch is easy to use:
   <ul>
     <li>dESPatch requires only a few lines of code in your application</li>
@@ -17,6 +11,12 @@
     <li>dESPatch provides an overview of registered devices including which software versions they are running</li>
     <li>dESPatch allows you to easily create new software releases</li>
     <li>dESPatch allows you to easily switch specific devices to specific software releases, for example to select a few devices for beta testing</li>
+  </ul></p>
+  <p>dESPatch is safe:
+  <ul>
+    <li>dESPatch uses HTTPS encryption to encrypt the traffic between client and server</li>
+    <li>dESPatch verifies the TLS certificates to prevent man-in-the-middle attacs</li>
+    <li>dESPatch uses API keys to prevent unauthorized firmware downloads</li>
   </ul></p>
   <p>dESPatch consists of two components:
   <ul>
