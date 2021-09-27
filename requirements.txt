@@ -9,11 +9,11 @@ Flask-Migrate
 Flask-Moment
 Flask-SQLAlchemy
 Flask-WTF
+gunicorn
 Jinja2
 PyJWT
 python-dotenv
 pytz
-requirements
 SQLAlchemy
 Werkzeug
 WTForms
