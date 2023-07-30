@@ -39,16 +39,28 @@ class ModelView(ModelView):
     # redirect to login page if user doesn't have access
     return render_template('admin_403.html'), 403
 
+def create_app():
+  app = Flask(__name__)
+  app.config.from_object("project.config")
+
+  import project.models
+
+  with app.app_context():
+    db.create_all()
+
+  return app
+
 from app.models import User, Product, Release, Instance
 
-user = User.query.filter_by(username='admin').first()
-if user is None:
-  print('User admin does not exist; creating user admin with password admin')
-  user = User(username='admin', email='')
-  user.active = True
-  user.set_password('admin')
-  db.session.add(user)
-  db.session.commit()
+with app.app_context():
+  user = User.query.filter_by(username='admin').first()
+  if user is None:
+    print('User admin does not exist; creating user admin with password admin')
+    user = User(username='admin', email='')
+    user.active = True
+    user.set_password('admin')
+    db.session.add(user)
+    db.session.commit()
 
 class ExitView(BaseView):
   @expose('/')
@@ -64,13 +76,14 @@ class dESPatchView(BaseView):
   def index(self):
     return redirect(url_for('index'))
 
-admin = Admin(app)
-admin.add_view(ModelView(User, db.session))
-admin.add_view(ModelView(Product, db.session))
-admin.add_view(ModelView(Release, db.session))
-admin.add_view(ModelView(Instance, db.session))
-admin.add_view(dESPatchView(name='dESPatch', endpoint='/index'))
-admin.add_view(ExitView(name='Stop server', endpoint='exit'))
+with app.app_context():
+  admin = Admin(app)
+  admin.add_view(ModelView(User, db.session))
+  admin.add_view(ModelView(Product, db.session))
+  admin.add_view(ModelView(Release, db.session))
+  admin.add_view(ModelView(Instance, db.session))
+  admin.add_view(dESPatchView(name='dESPatch', endpoint='/index'))
+  admin.add_view(ExitView(name='Stop server', endpoint='exit'))
 
 from app import routes, models, errors
 
